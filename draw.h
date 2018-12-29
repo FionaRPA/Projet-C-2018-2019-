@@ -39,6 +39,17 @@ void drawIn(char* file, int largeur, int hauteur, int x, int y, char clan, char 
 }
 
 
+void drawBoxes(){
+
+	MLV_draw_text_box(L_FENETRE-200, H_FENETRE-700, 100, 30, "Attendre", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-650, 150, 30, "Produire Baron", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-600, 150, 30, "Produire Guerrier", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-550, 150, 30, "Produire Manant" , 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	MLV_draw_text_box(L_FENETRE-130, H_FENETRE-50, 100, 30, "Quitter" , 9, MLV_COLOR_WHITE, MLV_COLOR_BLACK, MLV_COLOR_WHITE, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	MLV_actualise_window();
+}
+
+
 void drawArray(Monde world){
 	int x, y;
 	int largeur = 60, hauteur = 60;
@@ -92,25 +103,31 @@ void drawArray(Monde world){
 			}
 		}
 	}
+	drawBoxes();
 }
 
 
-void drawBoxes(){
+int clikBoxes(){
 	int x, y;
-	MLV_draw_text_box(L_FENETRE-200, H_FENETRE-700, 100, 30, "Attendre", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
-	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-650, 150, 30, "Produire Baron", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
-	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-600, 150, 30, "Produire Guerrier", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
-	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-550, 150, 30, "Produire Manant" , 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
-	MLV_draw_text_box(L_FENETRE-130, H_FENETRE-50, 100, 30, "Quitter" , 9, MLV_COLOR_WHITE, MLV_COLOR_BLACK, MLV_COLOR_WHITE, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
-	MLV_actualise_window();
-	MLV_wait_mouse(&x, &y);
 
-	if((x < L_FENETRE-100 && x > L_FENETRE-200) && (y < H_FENETRE-670 && y > H_FENETRE-700))
-		printf("la\n");
-	else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-620 && y > H_FENETRE-650))
-		printf("plo\n");
-	else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-570 && y > H_FENETRE-600))
-		printf("moi\n");
-	else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-520 && y > H_FENETRE-550))
-		printf("loi\n");
+	while(1){
+		MLV_wait_mouse(&x, &y);
+		//Bouton Attendre
+		if((x < L_FENETRE-100 && x > L_FENETRE-200) && (y < H_FENETRE-670 && y > H_FENETRE-700))
+			return 'a';
+		//Bouton Produire Baron
+		else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-620 && y > H_FENETRE-650))
+			return BARON;
+		//Bouton Produire Guerrier
+		else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-570 && y > H_FENETRE-600))
+			return GUERRIER;
+		//Bouton Produire Manant
+		else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-520 && y > H_FENETRE-550))
+			return MANANT;
+		//Bouton Quitter
+		else if((x < L_FENETRE-30 && x > L_FENETRE-130) && (y < H_FENETRE-20 && y > H_FENETRE-50)){
+			exit(EXIT_FAILURE);
+		}
+	}
 }
+
