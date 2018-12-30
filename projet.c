@@ -5,7 +5,7 @@
 //																			INITIALISATION
 
 Agent* createCastle(char couleur, int x, int y){
-	
+
 	Agent* chateau = (Agent *) malloc(sizeof(Agent));
 	if(chateau != NULL){
 		chateau->clan = couleur;
@@ -38,7 +38,7 @@ Agent* createAgent(char couleur, char genre, int x, int y){
 
 
 AListe createClan(Monde *world, Agent* chateau){
-
+	
 	AListe tmp;
 	tmp = (Agent *) malloc(sizeof(Agent));
 	if (tmp != NULL){
@@ -51,7 +51,7 @@ AListe createClan(Monde *world, Agent* chateau){
 
 
 void createMonde(Monde *world){
-
+	
 	int x, y;
 	Case cases;
 	cases.chateau = cases.habitant = NULL;
@@ -69,7 +69,7 @@ void createMonde(Monde *world){
 
 
 void addClan(AListe *couleur, Agent *agent){
-
+	
 	AListe tmp = (*couleur);
 	while(tmp->asuiv != NULL){
 		tmp = tmp->asuiv;
@@ -81,7 +81,7 @@ void addClan(AListe *couleur, Agent *agent){
 
 
 void addAgent(char couleur, Agent *agent, Monde *world){
-
+	
 	world->plateau[agent->posx][agent->posy].habitant = agent;
 	if (couleur == ROUGE){
 		//printf("chateau %c\n", world->rouge->clan);
@@ -124,13 +124,13 @@ void jeu(Monde *world){
 		char genreB = clikBoxes();
 		Agent* agentB = createAgent(BLEU, genreB, last, NBLIG-2);
 		addAgent(BLEU, agentB, world);
-
-		if (castleInList(world->rouge)==0 || castleInList(world->bleu)==0)
+		if (first == 5)
 			break;
+		//if (castleInList(world->rouge)==0 || castleInList(world->bleu)==0)
+		//	break;
 
 		first++;
 		last--;
-		//printf("R : %c\n", m.plateau[agentR->posx][agentR->posy].habitant->clan);
 	}
 }
 
