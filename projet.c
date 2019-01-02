@@ -2,7 +2,7 @@
 #include "menu.h"
 
 
-//																			INITIALISATION
+//																	INITIALISATION
 
 Agent* createCastle(char couleur, int x, int y){
 
@@ -11,7 +11,8 @@ Agent* createCastle(char couleur, int x, int y){
 		chateau->clan = couleur;
 		chateau->destx = chateau->desty = -1;
 		chateau->genre = CHATEAU;
-		chateau->produit = 0;
+		chateau->produit = -1;
+		chateau->temps = 0;
 		chateau->posx = x;
 		chateau->posy = y;
 	}
@@ -29,7 +30,7 @@ Agent* createAgent(char couleur, char genre, int x, int y){
 		tmp->posx = x;
 		tmp->posy = y;
 		tmp->destx = tmp->desty = 0;
-		tmp->temps = 0;
+
 		tmp->asuiv = NULL;
 		tmp->aprec = NULL;
 	}
@@ -83,7 +84,7 @@ void initArray(Monde *world){
 }
 
 
-void addClan(AListe *couleur, Agent *agent){
+void addClan(Agent *agent, AListe *couleur){
 	
 	AListe new = (Agent *) malloc(sizeof(Agent));
 	new = agent;
@@ -103,9 +104,9 @@ void addAgent(char couleur, Agent *agent, Monde *world){
 	
 	world->plateau[agent->posx][agent->posy].habitant = agent;
 	if (couleur == ROUGE)
-		addClan(&(world->rouge), agent);
+		addClan(agent, &(world->rouge));
 	else if (couleur == BLEU)
-		addClan(&(world->bleu), agent);
+		addClan(agent, &(world->bleu));
 }
 
 
@@ -120,12 +121,10 @@ int castleInList(AListe couleur){
 }
 
 
-void clanTour(char couleur, Monde *world, int x, int y){
+void castleAgent(char couleur, char *genre, Monde *world){
 
-	char genre = clikBoxes();
-	if(genre == 'a')
-		return;
-	Agent* agent = createAgent(couleur, genre, x, y);
+	printf("genre %c\n", *genre);
+	Agent* agent = createAgent(couleur, *genre, 0, 2);
 	addAgent(couleur, agent, world);
 	MLV_clear_window(MLV_COLOR_BLACK);
 	MLV_actualise_window();
@@ -133,26 +132,65 @@ void clanTour(char couleur, Monde *world, int x, int y){
 }
 
 
-void jeu(Monde *world){
+void castleProduction(char couleur, Agent *chateau, Monde *world){
 
-	int first = 0;
-	int last = NBCOL-1;
-	int tour = 0;
-
-	while(1){
-		
-		clanTour(ROUGE, world, first, 1);
-		clanTour(BLEU, world, last, NBLIG-2);
-		if (castleInList(world->rouge)==0 || castleInList(world->bleu)==0)
-			break;
-		first++;
-		last--;
-		tour++;
+	char choix;
+	if(chateau->produit == -1){
+		choix = clikBoxes();
+		switch(choix){
+			case 'a':
+				break;
+			case BARON:
+				chateau->produit = BARON;
+				chateau->temps = TBARON;
+				break;
+			case GUERRIER:
+				chateau->produit = GUERRIER;
+				chateau->temps = TGUERRIER;
+				break;
+			case MANANT:
+				chateau->produit = MANANT;
+				chateau->temps = TMANANT;
+				break;
+		}
+	}
+	else if(chateau->produit != -1 && chateau->temps == 0){
+		castleAgent(couleur, &(chateau->produit), world);
+		chateau->produit = -1;
+	}
+	else if(chateau->produit != -1 && chateau->temps > 0){
+		do{
+			choix = clikBoxes();
+		}while(choix != 'a');
+		chateau->temps--;
 	}
 }
 
-//																						MENU
 
+void parcoursClan(char couleur, AListe clan, Monde *world){
+
+	for(;clan != NULL; clan = clan->asuiv){
+		if(clan->genre == CHATEAU)
+			castleProduction(couleur, clan, world);
+	}
+}
+
+
+void jeu(Monde *world){
+
+	int nbtour;
+
+	while(1){
+		if (castleInList(world->rouge)==0 || castleInList(world->bleu)==0)
+			break;
+		parcoursClan(ROUGE, world->rouge, world);
+		parcoursClan(BLEU, world->bleu, world);
+		nbtour++;
+	}
+}
+
+
+//																				MENU
 
 int main(int argc, char const *argv[]){
 
@@ -172,3 +210,4 @@ int main(int argc, char const *argv[]){
 
 	return 0;
 }
+
