@@ -7,8 +7,8 @@
 #define L_FENETRE  1400
 
 /* dimension du monde en nombre de cases*/
-#define NBCOL 18
-#define NBLIG 12
+#define NBLIG 18
+#define NBCOL 12
 
 /* l’origine est en haut a gauche*/
 /* les deux clans */
@@ -64,7 +64,7 @@ typedef struct{
 
 
 typedef struct{
-	Case plateau[NBCOL][NBLIG];
+	Case plateau[NBLIG][NBCOL];
 	AListe rouge, bleu;
 	int tour; /* Numero du tour */
 	int tresorRouge, tresorBleu;

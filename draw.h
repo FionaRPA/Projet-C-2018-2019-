@@ -54,8 +54,8 @@ void drawArray(Monde world){
 	int x, y;
 	int largeur = 60, hauteur = 60;
 	
-	for (x = 0 ; x < NBCOL ; x++) {
-		for (y = 0 ; y < NBLIG ; y++) {
+	for (x = 0 ; x < NBLIG ; x++) {
+		for (y = 0 ; y < NBCOL ; y++) {
 			Agent* chateau = world.plateau[x][y].chateau;
 			Agent* habitant = world.plateau[x][y].habitant;
 			//haut gauche
@@ -131,3 +131,18 @@ int clikBoxes(){
 	}
 }
 
+
+void drawInformation(char couleur, Monde world){
+	
+	MLV_draw_text(L_FENETRE-250,30,"-------Tour numéro %d ------",MLV_COLOR_WHITE,world.tour);
+	MLV_draw_text(L_FENETRE-250,60, "Tour joueur",MLV_COLOR_WHITE);
+	if(couleur == ROUGE){
+		MLV_draw_text(L_FENETRE-150,60, "ROUGE",MLV_COLOR_RED);
+		MLV_draw_text(L_FENETRE-250,80, "Tresor : %d",MLV_COLOR_WHITE,world.tresorRouge);
+	}
+	else if(couleur == BLEU){
+		MLV_draw_text(L_FENETRE-150,60, "BLEU",MLV_COLOR_BLUE);
+		MLV_draw_text(L_FENETRE-250,80, "Tresor : %d",MLV_COLOR_WHITE,world.tresorBleu);
+	}
+	MLV_actualise_window();
+}

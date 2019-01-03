@@ -58,8 +58,8 @@ void createMonde(Monde *world){
 	cases.chateau = cases.habitant = NULL;
 	cases.clan = LIBRE;
 
-	for (x = 0 ; x < NBCOL ; x++) 
-		for (y = 0 ; y < NBLIG ; y++)
+	for (x = 0 ; x < NBLIG ; x++) 
+		for (y = 0 ; y < NBCOL ; y++)
  			world->plateau[x][y]= cases;
 
 	world->tour = 0;
@@ -68,37 +68,20 @@ void createMonde(Monde *world){
 	world->bleu = NULL;
 }
 
-
-void initArray(Monde *world){
-
-	Agent* chateauR, *chateauB;
-	createMonde(world);
-
-	chateauR = createCastle(ROUGE, 0, 0);
-	world->rouge = createClan(world,chateauR);
-	world->plateau[0][0].chateau = chateauR;
-
-	chateauB = createCastle(BLEU, NBCOL-1, NBLIG-1);
-	world->bleu = createClan(world,chateauB);
-	world->plateau[NBCOL-1][NBLIG-1].chateau = chateauB;
-}
-
-
-void addClan(Agent *agent, AListe *couleur){
+void addClan(Agent *agent, AListe *clan){
 	
 	AListe new = (Agent *) malloc(sizeof(Agent));
 	new = agent;
 	new->asuiv = NULL;
 
-	AListe tmp = (*couleur);
+	AListe tmp = (*clan);
 	while(tmp->asuiv != NULL){
 		tmp = tmp->asuiv;
 	}
 	tmp->asuiv = new;
-	tmp = *couleur;
-	*couleur = tmp;
+	tmp = *clan;
+	*clan = tmp;
 }
-
 
 void addAgent(char couleur, Agent *agent, Monde *world){
 	
@@ -110,9 +93,9 @@ void addAgent(char couleur, Agent *agent, Monde *world){
 }
 
 
-int castleInList(AListe couleur){
+int castleInList(AListe clan){
 
-	AListe tmp = couleur;
+	AListe tmp = clan;
 	for(; tmp != NULL; tmp = tmp->asuiv){
 		if(tmp->genre == CHATEAU)
 			return 1;
@@ -121,19 +104,278 @@ int castleInList(AListe couleur){
 }
 
 
-void castleAgent(char couleur, char *genre, Monde *world){
+int checkPosition(Case plateau[NBLIG][NBCOL], Agent* chateau, int *x, int *y){
 
-	printf("genre %c\n", *genre);
-	Agent* agent = createAgent(couleur, *genre, 0, 2);
-	addAgent(couleur, agent, world);
-	MLV_clear_window(MLV_COLOR_BLACK);
-	MLV_actualise_window();
-	drawArray(*world);
+	if(chateau->posx == 0 && chateau->posy == 0){
+		if(plateau[chateau->posx +1][chateau->posy].habitant == NULL){
+			*x = chateau->posx+1;
+			*y = chateau->posy;
+			return 0;
+		}
+		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL){
+			*x = chateau->posx;
+			*y = chateau->posy +1;
+			return 0;
+		}
+		else if(plateau[chateau->posx +1][chateau->posy +1].habitant ==NULL){
+			*x = chateau->posx +1;
+			*y = chateau->posy +1;
+			return 0;
+		}
+	}
+
+	else if(chateau->posx == NBLIG-1 && chateau->posy == 0){
+		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy;
+			return 0;
+		}
+		else if(plateau[chateau->posx -1][chateau->posy +1].habitant ==NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy +1;
+			return 0;
+		}
+		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL){
+			*x = chateau->posx;
+			*y = chateau->posy +1;
+			return 0;
+		}
+	}
+
+	else if(chateau->posx == NBLIG-1 && chateau->posy == NBCOL-1){
+		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy;
+			return 0;
+		}
+		else if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL){
+			*x = chateau->posx;
+			*y = chateau->posy -1;
+		}
+		else if(plateau[chateau->posx -1][chateau->posy -1].habitant ==NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy -1;
+			return 0;
+		}
+	}
+
+	else if(chateau->posx == 0 && chateau->posy == NBCOL-1){
+		if(plateau[chateau->posx +1][chateau->posy].habitant == NULL){
+			*x = chateau->posx +1;
+			*y = chateau->posy;
+			return 0;
+		}
+		else if(plateau[chateau->posx +1][chateau->posy -1].habitant ==NULL){
+			*x = chateau->posx +1;
+			*y = chateau->posy -1;
+			return 0;
+		}
+		else if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL){
+			*x = chateau->posx;
+			*y = chateau->posy -1;
+			return 0;
+		}
+	}
+
+	else if(chateau->posx != 0 && chateau->posx != NBLIG-1 && chateau->posy == 0){
+		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy;
+			return 0;
+		}
+		else if(plateau[chateau->posx -1][chateau->posy +1].habitant == NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy +1;
+			return 0;
+		}
+		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL){
+			*x = chateau->posx;
+			*y = chateau->posy +1;
+			return 0;
+		}
+		else if(plateau[chateau->posx +1][chateau->posy +1].habitant == NULL){
+			*x = chateau->posx +1;
+			*y = chateau->posy +1;
+			return 0;
+		}
+		else if(plateau[chateau->posx +1][chateau->posy].habitant == NULL){
+			*x = chateau->posx +1;
+			*y = chateau->posy;
+			return 0;
+		}
+	}
+
+	else if(chateau->posx == 0 && chateau->posy != 0 && chateau->posy != NBCOL-1){
+		if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL){
+			*x = chateau->posx ;
+			*y = chateau->posy -1;
+			return 0;
+		}
+		else if(plateau[chateau->posx +1][chateau->posy -1].habitant == NULL){
+			*x = chateau->posx +1;
+			*y = chateau->posy -1;
+			return 0;
+		}
+		else if(plateau[chateau->posx +1][chateau->posy].habitant == NULL){
+			*x = chateau->posx +1;
+			*y = chateau->posy;
+			return 0;
+		}
+		else if(plateau[chateau->posx +1][chateau->posy +1].habitant == NULL){
+			*x = chateau->posx +1;
+			*y = chateau->posy +1;
+			return 0;
+		}
+		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL){
+			*x = chateau->posx ;
+			*y = chateau->posy +1;
+			return 0;
+		}
+	}
+
+	else if(chateau->posx == NBLIG-1 && chateau->posy != 0 && chateau->posy == NBCOL-1){
+		if(plateau[chateau->posx][chateau->posy -1].habitant == NULL){
+			*x = chateau->posx ;
+			*y = chateau->posy -1;
+			return 0;
+		}
+		else if(plateau[chateau->posx -1][chateau->posy -1].habitant == NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy -1;
+			return 0;
+		}
+		else if(plateau[chateau->posx -1][chateau->posy].habitant == NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy;
+			return 0;
+		}
+		else if(plateau[chateau->posx -1][chateau->posy +1].habitant == NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy +1;
+			return 0;
+		}
+		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL){
+			*x = chateau->posx ;
+			*y = chateau->posy +1;
+			return 0;
+		}
+	}
+
+	else if(chateau->posy == NBCOL-1 && chateau->posx != 0 && chateau->posx != NBLIG-1){
+		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy;
+			return 0;
+		}
+		else if(plateau[chateau->posx -1][chateau->posy +1].habitant == NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy +1;
+			return 0;
+		}
+		else if(plateau[chateau->posx][chateau->posy+1].habitant == NULL){
+			*x = chateau->posx;
+			*y = chateau->posy +1;
+			return 0;
+		}
+		else if(plateau[chateau->posx +1][chateau->posy +1].habitant == NULL){
+			*x = chateau->posx +1;
+			*y = chateau->posy +1;
+			return 0;
+		}
+		else if(plateau[chateau->posx +1][chateau->posy].habitant == NULL){
+			*x = chateau->posx +1;
+			*y = chateau->posy;
+			return 0;
+		}
+	}	
+
+	else if(chateau->posx != NBLIG-1 && chateau->posx != 0 && chateau->posy != NBCOL-1 && chateau->posy != 0){
+
+		if(plateau[chateau->posx +1][chateau->posy].habitant == NULL){
+			*x = chateau->posx+1;
+			*y = chateau->posy;
+			return 0;
+		}
+		else if(plateau[chateau->posx +1][chateau->posy +1].habitant ==NULL){
+			*x = chateau->posx +1;
+			*y = chateau->posy +1;
+			return 0;
+		}
+		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL){
+			*x = chateau->posx;
+			*y = chateau->posy +1;
+			return 0;
+		}
+		else if(plateau[chateau->posx -1][chateau->posy].habitant == NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy;
+			return 0;
+		}
+		else if(plateau[chateau->posx -1][chateau->posy +1].habitant ==NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy +1;
+			return 0;
+		}
+		else if(plateau[chateau->posx -1][chateau->posy -1].habitant ==NULL){
+			*x = chateau->posx -1;
+			*y = chateau->posy -1;
+			return 0;
+		}
+		else if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL){
+			*x = chateau->posx;
+			*y = chateau->posy -1;
+			return 0;
+		}	
+		else if(plateau[chateau->posx +1][chateau->posy -1].habitant ==NULL){
+			*x = chateau->posx +1;
+			*y = chateau->posy -1;
+			return 0;
+		}
+	}
+	return 1;
 }
 
 
-void castleProduction(char couleur, Agent *chateau, Monde *world){
+void initArray(char couleur, AListe *clan, Monde *world, int x, int y){
 
+	Agent* chateau;
+
+	chateau = createCastle(couleur, x, y);
+	*clan = createClan(world,chateau);
+	world->plateau[x][y].chateau = chateau;
+
+	checkPosition(world->plateau, chateau, &x, &y);
+	Agent* manant = createAgent(couleur, MANANT, x,y);
+	addAgent(couleur, manant, world);
+
+	checkPosition(world->plateau, chateau, &x, &y);
+	Agent* baron = createAgent(couleur, BARON, x,y);
+	addAgent(couleur, baron, world);
+}
+
+
+void castleAgent(char couleur, char *genre, Monde *world, Agent* chateau){
+
+	int x, y;
+	if(checkPosition(world->plateau, chateau, &x, &y) == 0){
+		Agent* agent = createAgent(couleur, *genre, x, y);
+		addAgent(couleur, agent, world);
+		MLV_clear_window(MLV_COLOR_BLACK);
+		MLV_actualise_window();
+		drawArray(*world);
+	}
+	else{
+		MLV_draw_text(L_FENETRE-280, H_FENETRE-480, "Plus de place pour placer l'agent",MLV_COLOR_RED);
+		MLV_draw_text(L_FENETRE-220, H_FENETRE-450, "Cliquer pour passer",MLV_COLOR_WHITE);
+		MLV_actualise_window();
+		MLV_wait_mouse(&x,&y);
+	}
+}
+
+
+void castleProduction(char couleur, Agent *chateau, Monde *world, int *tresor){
+
+	int x, y;
 	char choix;
 	if(chateau->produit == -1){
 		choix = clikBoxes();
@@ -141,21 +383,45 @@ void castleProduction(char couleur, Agent *chateau, Monde *world){
 			case 'a':
 				break;
 			case BARON:
-				chateau->produit = BARON;
-				chateau->temps = TBARON;
+				if(*tresor >= CBARON){
+					chateau->produit = BARON;
+					chateau->temps = TBARON;
+					*tresor-=CBARON;
+				}else{
+					MLV_draw_text(L_FENETRE-280, H_FENETRE-480, "Pas assez d'argent",MLV_COLOR_GREEN);
+					MLV_draw_text(L_FENETRE-220, H_FENETRE-450, "Cliquer pour passer",MLV_COLOR_WHITE);
+					MLV_actualise_window();
+					MLV_wait_mouse(&x,&y);
+				}
 				break;
 			case GUERRIER:
-				chateau->produit = GUERRIER;
-				chateau->temps = TGUERRIER;
+				if(*tresor >= CGUERRIER){
+					chateau->produit = GUERRIER;
+					chateau->temps = TGUERRIER;
+					*tresor-=CGUERRIER;
+				}else{
+					MLV_draw_text(L_FENETRE-220, H_FENETRE-480, "Cliquer pour passer",MLV_COLOR_WHITE);
+					MLV_draw_text(L_FENETRE-280, H_FENETRE-450, "Pas assez d'argent",MLV_COLOR_GREEN);
+					MLV_actualise_window();
+					MLV_wait_mouse(&x,&y);
+				}
 				break;
 			case MANANT:
-				chateau->produit = MANANT;
-				chateau->temps = TMANANT;
+				if(*tresor >= CMANANT){
+					chateau->produit = MANANT;
+					chateau->temps = TMANANT;
+					*tresor-=CMANANT;
+				}else{
+					MLV_draw_text(L_FENETRE-220, H_FENETRE-480, "Cliquer pour passer",MLV_COLOR_WHITE);
+					MLV_draw_text(L_FENETRE-280, H_FENETRE-450, "Pas assez d'argent",MLV_COLOR_GREEN);
+					MLV_actualise_window();
+					MLV_wait_mouse(&x,&y);					
+				}
 				break;
 		}
 	}
 	else if(chateau->produit != -1 && chateau->temps == 0){
-		castleAgent(couleur, &(chateau->produit), world);
+		castleAgent(couleur, &(chateau->produit), world, chateau);
 		chateau->produit = -1;
 	}
 	else if(chateau->produit != -1 && chateau->temps > 0){
@@ -167,25 +433,30 @@ void castleProduction(char couleur, Agent *chateau, Monde *world){
 }
 
 
-void parcoursClan(char couleur, AListe clan, Monde *world){
-
+void parcoursClan(char couleur, AListe clan, Monde *world, int *tresor){
+	
+	drawInformation(couleur, *world);
 	for(;clan != NULL; clan = clan->asuiv){
-		if(clan->genre == CHATEAU)
-			castleProduction(couleur, clan, world);
+		if(clan->genre == CHATEAU){
+			MLV_draw_text(L_FENETRE-220, H_FENETRE-500, "Tour de chateau %c", MLV_COLOR_WHITE, couleur);
+			MLV_actualise_window();
+			castleProduction(couleur, clan, world, tresor);
+			MLV_clear_window(MLV_COLOR_BLACK);
+			MLV_actualise_window();
+			drawArray(*world);
+		}
 	}
 }
 
 
 void jeu(Monde *world){
 
-	int nbtour;
-
 	while(1){
 		if (castleInList(world->rouge)==0 || castleInList(world->bleu)==0)
 			break;
-		parcoursClan(ROUGE, world->rouge, world);
-		parcoursClan(BLEU, world->bleu, world);
-		nbtour++;
+		parcoursClan(ROUGE, world->rouge, world, &world->tresorRouge);
+		parcoursClan(BLEU, world->bleu, world, &world->tresorBleu);
+		world->tour++;
 	}
 }
 
@@ -195,7 +466,10 @@ void jeu(Monde *world){
 int main(int argc, char const *argv[]){
 
 	Monde m;
-	initArray(&m);
+	createMonde(&m);	
+	initArray(ROUGE, &m.rouge, &m, 0, 0);
+	initArray(BLEU, &m.bleu, &m, NBLIG-1, NBCOL-1);
+
 	MLV_create_window("Game Of Stools", "Projet", L_FENETRE, H_FENETRE);
 
 	menu();

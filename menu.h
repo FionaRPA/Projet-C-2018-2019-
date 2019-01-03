@@ -56,7 +56,7 @@ int menu() {
 		if ( event == MLV_MOUSE_BUTTON && x > jouer.x1 && x < jouer.x2 && y > jouer.y1 && y < jouer.y2 )
 			return 0;
 		if ( event == MLV_MOUSE_BUTTON && x > quitter.x1 && x < quitter.x2 && y > quitter.y1 && y < quitter.y2 )
-			return 1;
+			exit(EXIT_FAILURE);
 	}
 	return 0;
 }
