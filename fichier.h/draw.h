@@ -20,17 +20,17 @@ void drawIn(char* file, int largeur, int hauteur, int x, int y, char clan, char 
 	MLV_resize_image_with_proportions( image, largeur/2, hauteur/2);
 	switch(genre){
 		case CHATEAU:
-			MLV_draw_image( image, (x*largeur)+10, (y*hauteur)+10);
-			MLV_draw_rectangle((x*largeur)+10, (y*hauteur)+10, largeur, hauteur, clanToColor(clan));
+			MLV_draw_image( image, (y*largeur)+10, (x*hauteur)+10);
+			MLV_draw_rectangle((y*largeur)+10, (x*hauteur)+10, largeur, hauteur, clanToColor(clan));
 			break;
 		case GUERRIER:
-			MLV_draw_image( image, (x*largeur)+10, (y*hauteur)+(hauteur/2)+10);
+			MLV_draw_image( image, (y*largeur)+10, (x*hauteur)+(hauteur/2)+10);
 			break;
 		case MANANT:
-			MLV_draw_image( image, (x*largeur)+(largeur/2)+10, (y*hauteur)+(hauteur/2)+10);	
+			MLV_draw_image( image, (y*largeur)+(largeur/2)+10, (x*hauteur)+(hauteur/2)+10);	
 			break;
 		case BARON:
-			MLV_draw_image( image, (x*largeur)+(largeur/2)+10, (y*hauteur)+10);
+			MLV_draw_image( image, (y*largeur)+(largeur/2)+10, (x*hauteur)+10);
 			break;
 		default:
 			printf("ERROR\n");
@@ -59,15 +59,15 @@ void drawArray(Monde world){
 			Agent* chateau = world.plateau[x][y].chateau;
 			Agent* habitant = world.plateau[x][y].habitant;
 			//haut gauche
-			MLV_draw_rectangle((x*largeur)+10, (y*hauteur)+10, largeur/2, hauteur/2, MLV_rgba(120,120,120,255));
+			MLV_draw_rectangle((y*largeur)+10, (x*hauteur)+10, largeur/2, hauteur/2, MLV_rgba(120,120,120,255));
 			//haut droit
-			MLV_draw_rectangle((x*largeur)+(largeur/2)+10, (y*hauteur)+10, largeur/2, hauteur/2, MLV_rgba(120,120,120,255));
+			MLV_draw_rectangle((y*largeur)+(largeur/2)+10, (x*hauteur)+10, largeur/2, hauteur/2, MLV_rgba(120,120,120,255));
 			//bas gauche
-			MLV_draw_rectangle((x*largeur)+10, (y*hauteur)+(hauteur/2)+10, largeur/2, hauteur/2, MLV_rgba(120,120,120,255));
+			MLV_draw_rectangle((y*largeur)+10, (x*hauteur)+(hauteur/2)+10, largeur/2, hauteur/2, MLV_rgba(120,120,120,255));
 			//bas droit
-			MLV_draw_rectangle((x*largeur)+(largeur/2)+10, (y*hauteur)+(hauteur/2)+10, largeur/2, hauteur/2, MLV_rgba(120,120,120,255));
+			MLV_draw_rectangle((y*largeur)+(largeur/2)+10, (x*hauteur)+(hauteur/2)+10, largeur/2, hauteur/2, MLV_rgba(120,120,120,255));
 			//gros rectangle
-			MLV_draw_rectangle((x*largeur)+10, (y*hauteur)+10, largeur, hauteur, MLV_COLOR_WHITE);
+			MLV_draw_rectangle((y*largeur)+10, (x*hauteur)+10, largeur, hauteur, MLV_COLOR_WHITE);
 
 			if (chateau != NULL){
 				//CHATEAU
@@ -108,8 +108,8 @@ void drawArray(Monde world){
 
 
 int clikBoxes(){
+	
 	int x, y;
-
 	while(1){
 		MLV_wait_mouse(&x, &y);
 		//Bouton Attendre

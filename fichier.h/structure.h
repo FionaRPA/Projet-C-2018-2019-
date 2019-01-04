@@ -7,8 +7,8 @@
 #define L_FENETRE  1400
 
 /* dimension du monde en nombre de cases*/
-#define NBLIG 18
-#define NBCOL 12
+#define NBLIG 12
+#define NBCOL 18
 
 /* l’origine est en haut a gauche*/
 /* les deux clans */
@@ -47,7 +47,7 @@ typedef struct Bouton {
 typedef struct agent{
 	char clan; /* ROUGE ou BLEU */
 	char genre; /* BARON, MANANT, GUERRIER, CHATEAU */
-	char produit; /* production actuelle d’un chateau*/ //  PRODUCTION = AGENT ????????????
+	char produit; /* production actuelle d’un chateau*/
 	int temps; /* tours restant pour cette production */
 	int posx, posy; /* position actuelle */
 	int destx, desty; /* destination (negatif pour manant immobile) */
