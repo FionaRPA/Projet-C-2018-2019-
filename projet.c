@@ -1,5 +1,5 @@
-#include "draw.h"
-#include "menu.h"
+#include "fichier.h/draw.h"
+#include "fichier.h/menu.h"
 
 
 //																	INITIALISATION
@@ -357,15 +357,31 @@ void initArray(char couleur, AListe *clan, Monde *world, int x, int y){
 void castleAgent(char couleur, char *genre, Monde *world, Agent* chateau){
 
 	int x, y;
-	if(checkPosition(world->plateau, chateau, &x, &y) == 0){
-		Agent* agent = createAgent(couleur, *genre, x, y);
-		addAgent(couleur, agent, world);
-		MLV_clear_window(MLV_COLOR_BLACK);
+	checkPosition(world->plateau, chateau, &x, &y);
+	Agent* agent = createAgent(couleur, *genre, x, y);
+	addAgent(couleur, agent, world);
+	MLV_clear_window(MLV_COLOR_BLACK);
+	MLV_actualise_window();
+	drawArray(*world);
+}
+
+
+void checkProduction(int cout, int temps, char choix, int *tresor, Agent *chateau, Monde *world){
+
+	int x, y;
+	if(*tresor >= CBARON && (checkPosition(world->plateau, chateau, &x, &y)==0)){
+		chateau->produit = BARON;
+		chateau->temps = TBARON;
+		*tresor-=CBARON;
+	}
+	else if(checkPosition(world->plateau, chateau, &x, &y) == 1){
+		MLV_draw_text(L_FENETRE-280, H_FENETRE-480, "Plus de place pour placer l'agent",MLV_COLOR_RED);
+		MLV_draw_text(L_FENETRE-220, H_FENETRE-450, "Cliquer pour passer",MLV_COLOR_WHITE);
 		MLV_actualise_window();
-		drawArray(*world);
+		MLV_wait_mouse(&x,&y);
 	}
 	else{
-		MLV_draw_text(L_FENETRE-280, H_FENETRE-480, "Plus de place pour placer l'agent",MLV_COLOR_RED);
+		MLV_draw_text(L_FENETRE-280, H_FENETRE-480, "Pas assez d'argent",MLV_COLOR_GREEN);
 		MLV_draw_text(L_FENETRE-220, H_FENETRE-450, "Cliquer pour passer",MLV_COLOR_WHITE);
 		MLV_actualise_window();
 		MLV_wait_mouse(&x,&y);
@@ -373,50 +389,25 @@ void castleAgent(char couleur, char *genre, Monde *world, Agent* chateau){
 }
 
 
-void castleProduction(char couleur, Agent *chateau, Monde *world, int *tresor){
+void castleProduction(char couleur, int *tresor, Agent *chateau, Monde *world){
 
-	int x, y;
 	char choix;
 	if(chateau->produit == -1){
 		choix = clikBoxes();
 		switch(choix){
 			case 'a':
 				break;
+				
 			case BARON:
-				if(*tresor >= CBARON){
-					chateau->produit = BARON;
-					chateau->temps = TBARON;
-					*tresor-=CBARON;
-				}else{
-					MLV_draw_text(L_FENETRE-280, H_FENETRE-480, "Pas assez d'argent",MLV_COLOR_GREEN);
-					MLV_draw_text(L_FENETRE-220, H_FENETRE-450, "Cliquer pour passer",MLV_COLOR_WHITE);
-					MLV_actualise_window();
-					MLV_wait_mouse(&x,&y);
-				}
+				checkProduction(CBARON, TBARON, BARON, tresor, chateau, world);
 				break;
+
 			case GUERRIER:
-				if(*tresor >= CGUERRIER){
-					chateau->produit = GUERRIER;
-					chateau->temps = TGUERRIER;
-					*tresor-=CGUERRIER;
-				}else{
-					MLV_draw_text(L_FENETRE-220, H_FENETRE-480, "Cliquer pour passer",MLV_COLOR_WHITE);
-					MLV_draw_text(L_FENETRE-280, H_FENETRE-450, "Pas assez d'argent",MLV_COLOR_GREEN);
-					MLV_actualise_window();
-					MLV_wait_mouse(&x,&y);
-				}
+				checkProduction(CGUERRIER, TGUERRIER, GUERRIER, tresor, chateau, world);
 				break;
+
 			case MANANT:
-				if(*tresor >= CMANANT){
-					chateau->produit = MANANT;
-					chateau->temps = TMANANT;
-					*tresor-=CMANANT;
-				}else{
-					MLV_draw_text(L_FENETRE-220, H_FENETRE-480, "Cliquer pour passer",MLV_COLOR_WHITE);
-					MLV_draw_text(L_FENETRE-280, H_FENETRE-450, "Pas assez d'argent",MLV_COLOR_GREEN);
-					MLV_actualise_window();
-					MLV_wait_mouse(&x,&y);					
-				}
+				checkProduction(CMANANT, TMANANT, MANANT, tresor, chateau, world);
 				break;
 		}
 	}
@@ -440,7 +431,7 @@ void parcoursClan(char couleur, AListe clan, Monde *world, int *tresor){
 		if(clan->genre == CHATEAU){
 			MLV_draw_text(L_FENETRE-220, H_FENETRE-500, "Tour de chateau %c", MLV_COLOR_WHITE, couleur);
 			MLV_actualise_window();
-			castleProduction(couleur, clan, world, tresor);
+			castleProduction(couleur, tresor, clan, world);
 			MLV_clear_window(MLV_COLOR_BLACK);
 			MLV_actualise_window();
 			drawArray(*world);
