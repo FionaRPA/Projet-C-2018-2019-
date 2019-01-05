@@ -146,3 +146,13 @@ void drawInformation(char couleur, Monde world){
 	}
 	MLV_actualise_window();
 }
+
+
+void actuMonde(Monde world, char couleur ){
+	
+	MLV_clear_window(MLV_COLOR_BLACK);
+	drawArray(world);
+	drawInformation(couleur, world);
+	MLV_actualise_window();
+}
+

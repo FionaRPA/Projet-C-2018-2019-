@@ -61,7 +61,7 @@ void createMonde(Monde *world){
 		for (y = 0 ; y < NBCOL ; y++)
  			world->plateau[x][y]= cases;
 
-	world->tour = 0;
+	world->tour = 1;
 	world->tresorBleu = world->tresorRouge = 50;
 	world->rouge = NULL;
 	world->bleu = NULL;
@@ -364,7 +364,7 @@ void castleAgent(char couleur, char *genre, Monde *world, Agent* chateau){
 }
 
 
-void checkProduction(int cout, int temps, char choix, int *tresor, Agent *chateau, Monde *world){
+int checkProduction(int cout, int temps, char choix, int *tresor, Agent *chateau, Monde *world){
 
 	int x, y;
 	if(*tresor >= cout && (checkPosition(world->plateau, chateau, &x, &y)==0)){
@@ -374,37 +374,44 @@ void checkProduction(int cout, int temps, char choix, int *tresor, Agent *chatea
 	}
 	else if(checkPosition(world->plateau, chateau, &x, &y) == 1){
 		MLV_draw_text(L_FENETRE-280, H_FENETRE-480, "Plus de place pour placer l'agent",MLV_COLOR_RED);
-		MLV_draw_text(L_FENETRE-220, H_FENETRE-450, "Cliquer pour passer",MLV_COLOR_WHITE);
+		MLV_draw_text(L_FENETRE-220, H_FENETRE-450, "Autre choix",MLV_COLOR_WHITE);
 		MLV_actualise_window();
-		MLV_wait_mouse(&x,&y);
+
+		return -1;
 	}
 	else{
 		MLV_draw_text(L_FENETRE-280, H_FENETRE-480, "Pas assez d'argent",MLV_COLOR_GREEN);
-		MLV_draw_text(L_FENETRE-220, H_FENETRE-450, "Cliquer pour passer",MLV_COLOR_WHITE);
+		MLV_draw_text(L_FENETRE-220, H_FENETRE-450, "Autre choix",MLV_COLOR_WHITE);
 		MLV_actualise_window();
-		MLV_wait_mouse(&x,&y);
+
+		return -1;
 	}
+	return 0;
 } 
 
 
 void castleProduction(char couleur, int *tresor, Agent *chateau, Monde *world){
 	
+	int solve;
 	char choix;
 	if(chateau->produit == -1){
-		choix = clikBoxes();
-		switch(choix){
-			case 'a':
-				break;
-			case BARON:
-				checkProduction(CBARON, TBARON, BARON, tresor, chateau, world);
-				break;
-			case GUERRIER:
-				checkProduction(CGUERRIER, TGUERRIER, GUERRIER, tresor, chateau, world);
-				break;
-			case MANANT:
-				checkProduction(CMANANT, TMANANT, MANANT, tresor, chateau, world);
-				break;
-		}
+		do{
+			choix = clikBoxes();
+			switch(choix){
+				case 'a':
+					solve = 0;
+					break;
+				case BARON:
+					solve = checkProduction(CBARON, TBARON, BARON, tresor, chateau, world);
+					break;
+				case GUERRIER:
+					solve = checkProduction(CGUERRIER, TGUERRIER, GUERRIER, tresor, chateau, world);
+					break;
+				case MANANT:
+					solve = checkProduction(CMANANT, TMANANT, MANANT, tresor, chateau, world);
+					break;
+			}
+		}while(solve == -1);
 	}
 	else if(chateau->temps == 0){
 		castleAgent(couleur, &(chateau->produit), world, chateau);
@@ -419,44 +426,108 @@ void castleProduction(char couleur, int *tresor, Agent *chateau, Monde *world){
 		}while(choix != 'a');
 		chateau->temps--;
 	}
+
 }
 
+void moveAgent(Agent *agent, Monde *world){
+
+	int tmpx, tmpy;
+	tmpx = agent->posx;
+	tmpy = agent->posy;
+
+	if((agent->posx != agent->destx) || (agent->posy != agent->desty)){
+		if (tmpx < agent->destx){
+			agent->posx += 1;
+			world->plateau[agent->posx][agent->posy].habitant = agent;
+			world->plateau[tmpx][tmpy].habitant = NULL;
+			return;
+		}
+		if (tmpx > agent->destx){
+			agent->posx -= 1;
+			world->plateau[agent->posx][agent->posy].habitant = agent;
+			world->plateau[tmpx][tmpy].habitant = NULL;
+			return;
+		}
+		if (tmpy < agent->desty){
+			agent->posy += 1;
+			world->plateau[agent->posx][agent->posy].habitant = agent;
+			world->plateau[tmpx][tmpy].habitant = NULL;
+			return;
+		}
+		if (tmpy > agent->desty){
+			agent->posy -= 1;
+			world->plateau[agent->posx][agent->posy].habitant = agent;
+			world->plateau[tmpx][tmpy].habitant = NULL;
+			return;
+		}
+	}
+	agent->destx = 0;
+	agent->desty = 0;
+}
+
+
 void deplaceAgent(char couleur, Agent *agent, Monde *world){
-	int x, y;
-	int lig=10, col=10;
-	while(){
+
+	int x, y, i, j;
+	while(1){
+		int lig=10, col=10;
 		MLV_wait_mouse(&x, &y);
-		for(int i=0; i < NBLIG; i++){
-			for(int j=0; j < NBCOL; j++){
-				if((lig <= x && lig + 60 >= x) && (col <= y && col + 60 >= y)
-					if(world->plateau[i][j].habitant != NULL){
-						if(world_->plateau[i][j].habitant.clan == couleur){
-							MLV_draw_text(L_FENETRE-220, H_FENETRE-500, "Case non valide", MLV_COLOR_WHITE);
-							break;
+		for(i=0; i < NBLIG; i++){
+			for(j=0; j < NBCOL; j++){
+				if(( 0 <= x && x <= 1090) && (0 <= y && y <= 730)){
+					if((lig <= y && lig + 60 >= y) && (col <= x && col + 60 >= x)){
+						if (world->plateau[i][j].chateau == NULL && world->plateau[i][j].habitant == NULL ){
+							actuMonde(*world, couleur);
+							MLV_draw_text(L_FENETRE-220, H_FENETRE-200, "Case valide", MLV_COLOR_WHITE);
+							MLV_actualise_window();
+							agent->destx = i;
+							agent->desty = j;
+							return;
 						}
 					}
-
-				lig+=60;
+				}
+				else{
+					actuMonde(*world, couleur);
+					MLV_draw_text(L_FENETRE-270, H_FENETRE-500, "Tour de agent %c equipe %c", MLV_COLOR_WHITE, agent->genre, agent->clan);
+					MLV_draw_text(L_FENETRE-270, H_FENETRE-480, " coordonnée : [%d,%d]", MLV_COLOR_WHITE,  agent->posx, agent->posy);
+					MLV_draw_text(L_FENETRE-220, H_FENETRE-200, "Case non valide", MLV_COLOR_WHITE);
+					MLV_actualise_window();
+				}
+				col+=60;
+				
 			}
-			col+=60;
+			lig+=60;
+			col = 10;
+
+			
 		}
 	}
 }
 
-
-void parcoursClan(char couleur, AListe clan, Monde *world, int *tresor){
+void parcoursClan(char couleur, AListe equipe, Monde *world, int *tresor){
 	
+	actuMonde(*world, couleur);
 	drawInformation(couleur, *world);	
-	for(;clan != NULL; clan = clan->asuiv){
-		if(clan->genre == CHATEAU){
-			MLV_draw_text(L_FENETRE-220, H_FENETRE-500, "Tour de chateau %c", MLV_COLOR_WHITE, couleur);
+	for(;equipe != NULL; equipe = equipe->asuiv){
+		if(equipe->genre == CHATEAU){
+			MLV_draw_text(L_FENETRE-270, H_FENETRE-500, "Tour de chateau %c  coordonnée : [%d,%d]", MLV_COLOR_WHITE, couleur, equipe->posx, equipe->posy);
 			MLV_actualise_window();
-			castleProduction(couleur, tresor, clan, world);
-			MLV_clear_window(MLV_COLOR_BLACK);
-			MLV_actualise_window();
-			drawArray(*world);
+			castleProduction(couleur, tresor, equipe, world);
+			actuMonde(*world, couleur);
 		}
+		else{
+			MLV_draw_text(L_FENETRE-270, H_FENETRE-500, "Tour de agent %c equipe %c", MLV_COLOR_WHITE, equipe->genre, equipe->clan);
+			MLV_draw_text(L_FENETRE-270, H_FENETRE-480, " coordonnée : [%d,%d]", MLV_COLOR_WHITE,  equipe->posx, equipe->posy);
 
+			MLV_actualise_window();
+			if(equipe->destx != 0 || equipe->desty != 0)
+
+				moveAgent(equipe, world);
+			else
+				deplaceAgent(couleur, equipe, world);
+			actuMonde(*world, couleur);
+
+		}
 	}
 }
 
