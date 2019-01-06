@@ -50,6 +50,21 @@ void drawBoxes(){
 }
 
 
+void drawBoxesAgent(Agent * agent){
+	if(agent->genre == MANNANT){
+		MLV_draw_text_box(L_FENETRE-200, H_FENETRE-700, 100, 30, "Immobile", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+		MLV_draw_text_box(L_FENETRE-225, H_FENETRE-650, 150, 30, "Déplacer", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	}
+	//Bouton rester immobile
+	if((x < L_FENETRE-100 && x > L_FENETRE-200) && (y < H_FENETRE-670 && y > H_FENETRE-700))
+		return 1;
+	//Bouton Déplacer
+	else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-620 && y > H_FENETRE-650))
+		return 2;
+}
+
+
+
 void drawArray(Monde world){
 	int x, y;
 	int largeur = 60, hauteur = 60;
@@ -134,7 +149,8 @@ int clikBoxes(){
 
 void drawInformation(char couleur, Monde world){
 	
-	MLV_draw_text(L_FENETRE-250,30,"-------Tour numéro %d ------",MLV_COLOR_WHITE,world.tour);
+	MLV_draw_text(L_FENETRE-220,20,"       Tour %d",MLV_COLOR_WHITE,world.tour);
+	MLV_draw_text(L_FENETRE-250,30,"_____________________________",MLV_COLOR_WHITE);
 	MLV_draw_text(L_FENETRE-250,60, "Tour joueur",MLV_COLOR_WHITE);
 	if(couleur == ROUGE){
 		MLV_draw_text(L_FENETRE-150,60, "ROUGE",MLV_COLOR_RED);
