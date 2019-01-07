@@ -50,17 +50,21 @@ void drawBoxes(){
 }
 
 
-void drawBoxesAgent(Agent * agent){
-	if(agent->genre == MANNANT){
+int drawBoxesAgent(Agent * agent){
+	
+	int x, y;
+	if(agent->genre == MANANT){
 		MLV_draw_text_box(L_FENETRE-200, H_FENETRE-700, 100, 30, "Immobile", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
 		MLV_draw_text_box(L_FENETRE-225, H_FENETRE-650, 150, 30, "Déplacer", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
 	}
+	MLV_wait_mouse(&x, &y);
 	//Bouton rester immobile
 	if((x < L_FENETRE-100 && x > L_FENETRE-200) && (y < H_FENETRE-670 && y > H_FENETRE-700))
 		return 1;
 	//Bouton Déplacer
 	else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-620 && y > H_FENETRE-650))
 		return 2;
+	return 0;
 }
 
 

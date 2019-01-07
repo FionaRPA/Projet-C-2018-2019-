@@ -4,6 +4,22 @@
 
 //																	INITIALISATION
 
+
+void afficheListe(Case plateau[NBLIG][NBCOL]){
+	int i, j;
+	printf("gfhgv");
+	for(i=0; i<NBLIG; i++){
+		for(j=0;j < NBCOL; j++){
+			if(plateau[i][j].habitant != NULL ){
+				printf("hab: %c [%d;%d]\n",plateau[i][j].habitant->genre, plateau[i][j].habitant->posx, plateau[i][j].habitant->posy);
+			}
+			if(plateau[i][j].chateau != NULL )
+				printf("chat: %c [%d;%d]\n",plateau[i][j].chateau->genre, plateau[i][j].chateau->posx, plateau[i][j].chateau->posy );
+
+		}
+	}
+}
+
 Agent* createCastle(char couleur, int x, int y){
 
 	Agent* chateau = (Agent *) malloc(sizeof(Agent));
@@ -99,20 +115,21 @@ int castleInList(AListe clan){
 	return 0;
 }
  
+
 int checkPosition(Case plateau[NBLIG][NBCOL], Agent* chateau, int *x, int *y){
 
 	if(chateau->posx == 0 && chateau->posy == 0){
-		if(plateau[chateau->posx +1][chateau->posy].habitant == NULL){
+		if(plateau[chateau->posx +1][chateau->posy].habitant == NULL && plateau[chateau->posx +1][chateau->posy].chateau == NULL){
 			*x = chateau->posx+1;
 			*y = chateau->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL){
+		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx;
 			*y = chateau->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy +1].habitant ==NULL){
+		else if(plateau[chateau->posx +1][chateau->posy +1].habitant ==NULL  && plateau[chateau->posx +1][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx +1;
 			*y = chateau->posy +1;
 			return 0;
@@ -120,17 +137,17 @@ int checkPosition(Case plateau[NBLIG][NBCOL], Agent* chateau, int *x, int *y){
 	}
 
 	else if(chateau->posx == NBLIG-1 && chateau->posy == 0){
-		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL){
+		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL  && plateau[chateau->posx -1][chateau->posy].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy +1].habitant ==NULL){
+		else if(plateau[chateau->posx -1][chateau->posy +1].habitant ==NULL  && plateau[chateau->posx -1][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL){
+		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx;
 			*y = chateau->posy +1;
 			return 0;
@@ -138,16 +155,16 @@ int checkPosition(Case plateau[NBLIG][NBCOL], Agent* chateau, int *x, int *y){
 	}
 
 	else if(chateau->posx == NBLIG-1 && chateau->posy == NBCOL-1){
-		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL){
+		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL && plateau[chateau->posx -1][chateau->posy].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL){
+		else if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL  && plateau[chateau->posx ][chateau->posy -1].chateau == NULL){
 			*x = chateau->posx;
 			*y = chateau->posy -1;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy -1].habitant ==NULL){
+		else if(plateau[chateau->posx -1][chateau->posy -1].habitant ==NULL  && plateau[chateau->posx -1][chateau->posy -1].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy -1;
 			return 0;
@@ -155,17 +172,17 @@ int checkPosition(Case plateau[NBLIG][NBCOL], Agent* chateau, int *x, int *y){
 	}
 
 	else if(chateau->posx == 0 && chateau->posy == NBCOL-1){
-		if(plateau[chateau->posx +1][chateau->posy].habitant == NULL){
+		if(plateau[chateau->posx +1][chateau->posy].habitant == NULL  && plateau[chateau->posx +1][chateau->posy].chateau == NULL){
 			*x = chateau->posx +1;
 			*y = chateau->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy -1].habitant ==NULL){
+		else if(plateau[chateau->posx +1][chateau->posy -1].habitant ==NULL  && plateau[chateau->posx +1][chateau->posy -1].chateau == NULL){
 			*x = chateau->posx +1;
 			*y = chateau->posy -1;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL){
+		else if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL && plateau[chateau->posx ][chateau->posy -1].chateau == NULL){
 			*x = chateau->posx;
 			*y = chateau->posy -1;
 			return 0;
@@ -173,27 +190,27 @@ int checkPosition(Case plateau[NBLIG][NBCOL], Agent* chateau, int *x, int *y){
 	}
 
 	else if(chateau->posx != 0 && chateau->posx != NBLIG-1 && chateau->posy == 0){
-		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL){
+		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL && plateau[chateau->posx -1][chateau->posy].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy +1].habitant == NULL){
+		else if(plateau[chateau->posx -1][chateau->posy +1].habitant == NULL && plateau[chateau->posx -1][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL){
+		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx;
 			*y = chateau->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy +1].habitant == NULL){
+		else if(plateau[chateau->posx +1][chateau->posy +1].habitant == NULL && plateau[chateau->posx +1][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx +1;
 			*y = chateau->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy].habitant == NULL){
+		else if(plateau[chateau->posx +1][chateau->posy].habitant == NULL && plateau[chateau->posx +1][chateau->posy].chateau == NULL){
 			*x = chateau->posx +1;
 			*y = chateau->posy;
 			return 0;
@@ -201,27 +218,27 @@ int checkPosition(Case plateau[NBLIG][NBCOL], Agent* chateau, int *x, int *y){
 	}
 
 	else if(chateau->posx == 0 && chateau->posy != 0 && chateau->posy != NBCOL-1){
-		if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL){
+		if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL && plateau[chateau->posx ][chateau->posy -1].chateau == NULL){
 			*x = chateau->posx ;
 			*y = chateau->posy -1;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy -1].habitant == NULL){
+		else if(plateau[chateau->posx +1][chateau->posy -1].habitant == NULL && plateau[chateau->posx +1][chateau->posy -1].chateau == NULL){
 			*x = chateau->posx +1;
 			*y = chateau->posy -1;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy].habitant == NULL){
+		else if(plateau[chateau->posx +1][chateau->posy].habitant == NULL && plateau[chateau->posx +1][chateau->posy].chateau == NULL){
 			*x = chateau->posx +1;
 			*y = chateau->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy +1].habitant == NULL){
+		else if(plateau[chateau->posx +1][chateau->posy +1].habitant == NULL && plateau[chateau->posx +1][chateau->posy -1].chateau == NULL){
 			*x = chateau->posx +1;
 			*y = chateau->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL){
+		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx ;
 			*y = chateau->posy +1;
 			return 0;
@@ -229,27 +246,27 @@ int checkPosition(Case plateau[NBLIG][NBCOL], Agent* chateau, int *x, int *y){
 	}
 
 	else if(chateau->posx == NBLIG-1 && chateau->posy != 0 && chateau->posy == NBCOL-1){
-		if(plateau[chateau->posx][chateau->posy -1].habitant == NULL){
+		if(plateau[chateau->posx][chateau->posy -1].habitant == NULL && plateau[chateau->posx ][chateau->posy -1].chateau == NULL){
 			*x = chateau->posx ;
 			*y = chateau->posy -1;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy -1].habitant == NULL){
+		else if(plateau[chateau->posx -1][chateau->posy -1].habitant == NULL  && plateau[chateau->posx -1][chateau->posy -1].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy -1;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy].habitant == NULL){
+		else if(plateau[chateau->posx -1][chateau->posy].habitant == NULL && plateau[chateau->posx -1][chateau->posy].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy +1].habitant == NULL){
+		else if(plateau[chateau->posx -1][chateau->posy +1].habitant == NULL && plateau[chateau->posx -1][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL){
+		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx ;
 			*y = chateau->posy +1;
 			return 0;
@@ -257,27 +274,27 @@ int checkPosition(Case plateau[NBLIG][NBCOL], Agent* chateau, int *x, int *y){
 	}
 
 	else if(chateau->posy == NBCOL-1 && chateau->posx != 0 && chateau->posx != NBLIG-1){
-		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL){
+		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL && plateau[chateau->posx -1][chateau->posy].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy +1].habitant == NULL){
+		else if(plateau[chateau->posx -1][chateau->posy +1].habitant == NULL && plateau[chateau->posx -1][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx][chateau->posy+1].habitant == NULL){
+		else if(plateau[chateau->posx][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx;
 			*y = chateau->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy +1].habitant == NULL){
+		else if(plateau[chateau->posx +1][chateau->posy +1].habitant == NULL && plateau[chateau->posx +1][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx +1;
 			*y = chateau->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy].habitant == NULL){
+		else if(plateau[chateau->posx +1][chateau->posy].habitant == NULL && plateau[chateau->posx +1][chateau->posy].chateau == NULL){
 			*x = chateau->posx +1;
 			*y = chateau->posy;
 			return 0;
@@ -286,42 +303,42 @@ int checkPosition(Case plateau[NBLIG][NBCOL], Agent* chateau, int *x, int *y){
 
 	else if(chateau->posx != NBLIG-1 && chateau->posx != 0 && chateau->posy != NBCOL-1 && chateau->posy != 0){
 
-		if(plateau[chateau->posx +1][chateau->posy].habitant == NULL){
+		if(plateau[chateau->posx +1][chateau->posy].habitant == NULL && plateau[chateau->posx +1][chateau->posy].chateau == NULL){
 			*x = chateau->posx+1;
 			*y = chateau->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy +1].habitant ==NULL){
+		else if(plateau[chateau->posx +1][chateau->posy +1].habitant ==NULL && plateau[chateau->posx +1][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx +1;
 			*y = chateau->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL){
+		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx;
 			*y = chateau->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy].habitant == NULL){
+		else if(plateau[chateau->posx -1][chateau->posy].habitant == NULL && plateau[chateau->posx -1][chateau->posy].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy +1].habitant ==NULL){
+		else if(plateau[chateau->posx -1][chateau->posy +1].habitant ==NULL && plateau[chateau->posx -1][chateau->posy +1].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy -1].habitant ==NULL){
+		else if(plateau[chateau->posx -1][chateau->posy -1].habitant ==NULL && plateau[chateau->posx -1][chateau->posy -1].chateau == NULL){
 			*x = chateau->posx -1;
 			*y = chateau->posy -1;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL){
+		else if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL && plateau[chateau->posx ][chateau->posy -1].chateau == NULL){
 			*x = chateau->posx;
 			*y = chateau->posy -1;
 			return 0;
 		}	
-		else if(plateau[chateau->posx +1][chateau->posy -1].habitant ==NULL){
+		else if(plateau[chateau->posx +1][chateau->posy -1].habitant ==NULL && plateau[chateau->posx +1][chateau->posy -1].chateau == NULL){
 			*x = chateau->posx +1;
 			*y = chateau->posy -1;
 			return 0;
@@ -410,7 +427,7 @@ void castleProduction(char couleur, int *tresor, Agent *chateau, Monde *world){
 		castleAgent(couleur, &(chateau->produit), world, chateau);
 		chateau->produit = -1;
 		drawInformation(couleur, *world);
-		MLV_wait_mouse(NULL,NULL);
+
 
 	}
 	else if(chateau->temps > 0){
@@ -422,6 +439,7 @@ void castleProduction(char couleur, int *tresor, Agent *chateau, Monde *world){
 
 }
 
+
 void moveAgent(Agent *agent, Monde *world){
 
 	int tmpx, tmpy;
@@ -429,38 +447,319 @@ void moveAgent(Agent *agent, Monde *world){
 	tmpy = agent->posy;
 
 	if((agent->posx != agent->destx) || (agent->posy != agent->desty)){
-		if (tmpx < agent->destx){
-			if(world->plateau[tmpx+1][tmpy].habitant == NULL){
-				agent->posx += 1;
-				world->plateau[agent->posx][agent->posy].habitant = agent;
-				world->plateau[tmpx][tmpy].habitant = NULL;
-				return;
+		if(agent->destx < tmpx && agent->desty < tmpy){
+
+			if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) && tmpx >= 0){
+				if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) && tmpy >= 0){
+					if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) && tmpx <= NBLIG-1){
+						if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) && tmpy <= NBCOL-1)
+							printf("ERREUR\n");
+						else{
+							agent->posy += 1;
+							world->plateau[agent->posx][agent->posy].habitant = agent;
+							world->plateau[tmpx][tmpy].habitant = NULL;
+							return;
+						}
+					}
+					else{
+						agent->posx += 1;
+						world->plateau[agent->posx][agent->posy].habitant = agent;
+						world->plateau[tmpx][tmpy].habitant = NULL;
+						return;
+
+					}
+				}
+				else{
+					agent->posy -= 1;
+					world->plateau[agent->posx][agent->posy].habitant = agent;
+					world->plateau[tmpx][tmpy].habitant = NULL;
+					return;
+				}
 			}
-		}
-		if (tmpx > agent->destx){
-			if(world->plateau[tmpx-1][tmpy].habitant == NULL){
+			else{
 				agent->posx -= 1;
 				world->plateau[agent->posx][agent->posy].habitant = agent;
 				world->plateau[tmpx][tmpy].habitant = NULL;
 				return;
 			}
+
 		}
-		if (tmpy < agent->desty){
-			if(world->plateau[tmpx][tmpy+1].habitant == NULL){
+
+		else if(agent->destx < tmpx && agent->desty == tmpy){
+				
+			if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) && tmpx >= 0){
+				if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) && tmpy >= 0){
+					if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) && tmpx <= NBLIG-1){
+						if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) && tmpy <= NBCOL-1)
+							printf("ERREUR\n");
+						else{
+							agent->posy += 1;
+							world->plateau[agent->posx][agent->posy].habitant = agent;
+							world->plateau[tmpx][tmpy].habitant = NULL;
+							return;
+						}
+					}
+					else{
+						agent->posx += 1;
+						world->plateau[agent->posx][agent->posy].habitant = agent;
+						world->plateau[tmpx][tmpy].habitant = NULL;
+						return;
+					}
+				}
+				else{
+					agent->posy -= 1;
+					world->plateau[agent->posx][agent->posy].habitant = agent;
+					world->plateau[tmpx][tmpy].habitant = NULL;
+					return;
+				}
+			}
+			else{
+				agent->posx -= 1;
+				world->plateau[agent->posx][agent->posy].habitant = agent;
+				world->plateau[tmpx][tmpy].habitant = NULL;
+				return;
+			}
+
+		}
+
+		else if(agent->destx < tmpx && agent->desty > tmpy){
+				
+			if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) && tmpx >= 0){
+
+				if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) && tmpy <= NBCOL-1){
+
+					if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) && tmpx <= NBLIG-1){
+
+						if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) && tmpy >= 0)
+							printf("ERREUR\n");
+						else{
+							agent->posy -= 1;
+							world->plateau[agent->posx][agent->posy].habitant = agent;
+							world->plateau[tmpx][tmpy].habitant = NULL;
+							return;
+						}
+					}
+					else{
+						agent->posx += 1;
+						world->plateau[agent->posx][agent->posy].habitant = agent;
+						world->plateau[tmpx][tmpy].habitant = NULL;
+						return;
+					}
+				}
+				else{
+					agent->posy += 1;
+					world->plateau[agent->posx][agent->posy].habitant = agent;
+					world->plateau[tmpx][tmpy].habitant = NULL;
+					return;
+				}
+			}
+			else{
+				agent->posx -= 1;
+				world->plateau[agent->posx][agent->posy].habitant = agent;
+				world->plateau[tmpx][tmpy].habitant = NULL;
+				return;
+			}
+
+		}
+
+		else if(agent->destx == tmpx && agent->desty > tmpy){
+				
+			if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) && tmpy <= NBCOL-1){
+				
+				if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) && tmpx >= 0){
+
+					if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) && tmpx <= NBLIG-1){
+
+						if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) && tmpy >= 0)
+							printf("ERREUR\n");
+						else{
+							agent->posy -= 1;
+							world->plateau[agent->posx][agent->posy].habitant = agent;
+							world->plateau[tmpx][tmpy].habitant = NULL;
+							return;
+						}
+					}
+					else{
+						agent->posx += 1;
+						world->plateau[agent->posx][agent->posy].habitant = agent;
+						world->plateau[tmpx][tmpy].habitant = NULL;
+						return;
+					}
+				}
+				else{
+					agent->posx -= 1;
+					world->plateau[agent->posx][agent->posy].habitant = agent;
+					world->plateau[tmpx][tmpy].habitant = NULL;
+					return;
+				}
+			}
+			else{
+				agent->posy += 1;
+				world->plateau[agent->posx][agent->posy].habitant = agent;
+				world->plateau[tmpx][tmpy].habitant = NULL;
+				return;
+			}
+
+		}
+
+		else if(agent->destx > tmpx && agent->desty > tmpy){
+				
+			if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) && tmpy <= NBCOL-1){
+
+				if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) && tmpx <= NBLIG-1){
+				
+					if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) && tmpx >= 0){
+
+
+						if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) && tmpy >= 0)
+							printf("ERREUR\n");
+						else{
+							agent->posy -= 1;
+							world->plateau[agent->posx][agent->posy].habitant = agent;
+							world->plateau[tmpx][tmpy].habitant = NULL;
+							return;
+						}
+					}
+					else{
+						agent->posx -= 1;
+						world->plateau[agent->posx][agent->posy].habitant = agent;
+						world->plateau[tmpx][tmpy].habitant = NULL;
+						return;
+					}
+				}
+				else{
+					agent->posx += 1;
+					world->plateau[agent->posx][agent->posy].habitant = agent;
+					world->plateau[tmpx][tmpy].habitant = NULL;
+					return;
+				}
+			}
+			else{
 				agent->posy += 1;
 				world->plateau[agent->posx][agent->posy].habitant = agent;
 				world->plateau[tmpx][tmpy].habitant = NULL;
 				return;
 			}
 		}
-		if (tmpy > agent->desty){
-			if(world->plateau[tmpx][tmpy-1].habitant == NULL){
-				agent->posy -= 1;
+
+		else if(agent->destx > tmpx && agent->desty == tmpy){
+				
+			if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) && tmpx <= NBLIG-1){
+	
+				if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) && tmpy <= NBCOL-1){
+				
+					if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) && tmpx >= 0){
+
+
+						if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) && tmpy >= 0)
+							printf("ERREUR\n");
+						else{
+							agent->posy -= 1;
+							world->plateau[agent->posx][agent->posy].habitant = agent;
+							world->plateau[tmpx][tmpy].habitant = NULL;
+							return;
+						}
+					}
+					else{
+						agent->posx -= 1;
+						world->plateau[agent->posx][agent->posy].habitant = agent;
+						world->plateau[tmpx][tmpy].habitant = NULL;
+						return;
+					}
+				}
+				else{
+					agent->posy += 1;
+					world->plateau[agent->posx][agent->posy].habitant = agent;
+					world->plateau[tmpx][tmpy].habitant = NULL;
+					return;
+				}
+			}
+			else{
+				agent->posx += 1;
 				world->plateau[agent->posx][agent->posy].habitant = agent;
 				world->plateau[tmpx][tmpy].habitant = NULL;
 				return;
 			}
 		}
+
+		else if(agent->destx > tmpx && agent->desty < tmpy){
+				
+			if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) && tmpx <= NBLIG-1){
+	
+				if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) && tmpy >= 0){
+				
+					if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) && tmpx >= 0){
+
+
+						if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) && tmpy <= NBCOL-1)
+							printf("ERREUR\n");
+						else{
+							agent->posy += 1;
+							world->plateau[agent->posx][agent->posy].habitant = agent;
+							world->plateau[tmpx][tmpy].habitant = NULL;
+							return;
+						}
+					}
+					else{
+						agent->posx -= 1;
+						world->plateau[agent->posx][agent->posy].habitant = agent;
+						world->plateau[tmpx][tmpy].habitant = NULL;
+						return;
+					}
+				}
+				else{
+					agent->posy -= 1;
+					world->plateau[agent->posx][agent->posy].habitant = agent;
+					world->plateau[tmpx][tmpy].habitant = NULL;
+					return;
+				}
+			}
+			else{
+				agent->posx += 1;
+				world->plateau[agent->posx][agent->posy].habitant = agent;
+				world->plateau[tmpx][tmpy].habitant = NULL;
+				return;
+			}
+		}
+
+		else if(agent->destx == tmpx && agent->desty < tmpy){
+				
+			if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) && tmpy >= 0){
+
+				if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) && tmpx <= NBLIG-1){
+					
+					if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) && tmpx >= 0){
+
+						if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) && tmpy <= NBCOL-1)
+							printf("ERREUR\n");
+						else{
+							agent->posy += 1;
+							world->plateau[agent->posx][agent->posy].habitant = agent;
+							world->plateau[tmpx][tmpy].habitant = NULL;
+							return;
+						}
+					}
+					else{
+						agent->posx -= 1;
+						world->plateau[agent->posx][agent->posy].habitant = agent;
+						world->plateau[tmpx][tmpy].habitant = NULL;
+						return;
+					}
+				}
+				else{
+					agent->posx += 1;
+					world->plateau[agent->posx][agent->posy].habitant = agent;
+					world->plateau[tmpx][tmpy].habitant = NULL;
+					return;
+				}
+			}
+			else{
+				agent->posy -= 1;
+				world->plateau[agent->posx][agent->posy].habitant = agent;
+				world->plateau[tmpx][tmpy].habitant = NULL;
+				return;
+			}
+		}	
 	}
 	agent->destx = 0;
 	agent->desty = 0;
@@ -478,7 +777,7 @@ void deplaceAgent(char couleur, Agent *agent, Monde *world){
 					if((lig <= y && lig + 60 >= y) && (col <= x && col + 60 >= x)){
 						if (world->plateau[i][j].chateau == NULL && world->plateau[i][j].habitant == NULL ){
 							actuMonde(*world, couleur);
-							MLV_draw_text(L_FENETRE-220, H_FENETRE-200, "Case valide", MLV_COLOR_WHITE);
+							MLV_draw_text(L_FENETRE-220, H_FENETRE-300, "Case valide", MLV_COLOR_WHITE);
 							MLV_actualise_window();
 							agent->destx = i;
 							agent->desty = j;
@@ -490,7 +789,7 @@ void deplaceAgent(char couleur, Agent *agent, Monde *world){
 					actuMonde(*world, couleur);
 					MLV_draw_text(L_FENETRE-270, H_FENETRE-500, "Tour de agent %c equipe %c", MLV_COLOR_WHITE, agent->genre, agent->clan);
 					MLV_draw_text(L_FENETRE-270, H_FENETRE-480, " coordonnée : [%d,%d]", MLV_COLOR_WHITE,  agent->posy, agent->posx);
-					MLV_draw_text(L_FENETRE-220, H_FENETRE-200, "Case non valide", MLV_COLOR_WHITE);
+					MLV_draw_text(L_FENETRE-220, H_FENETRE-300, "Case non valide", MLV_COLOR_WHITE);
 					MLV_actualise_window();
 				}
 				col+=60;
@@ -505,7 +804,7 @@ void deplaceAgent(char couleur, Agent *agent, Monde *world){
 }
 
 void parcoursClan(char couleur, AListe equipe, Monde *world, int *tresor){
-	
+
 	actuMonde(*world, couleur);
 	drawInformation(couleur, *world);	
 	for(;equipe != NULL; equipe = equipe->asuiv){
@@ -541,10 +840,14 @@ void jeu(Monde *world){
 		if (joueur % 2 == 0){
 			parcoursClan(ROUGE, world->rouge, world, &world->tresorRouge);
 			parcoursClan(BLEU, world->bleu, world, &world->tresorBleu);
+			afficheListe(world->plateau);
+
 		}
 		else{
 			parcoursClan(BLEU, world->bleu, world, &world->tresorBleu);
 			parcoursClan(ROUGE, world->rouge, world, &world->tresorRouge);
+			afficheListe(world->plateau);
+
 		}
 		world->tour++;
 	}
