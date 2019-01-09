@@ -50,20 +50,32 @@ void drawBoxes(){
 }
 
 
-int drawBoxesAgent(Agent * agent){
+int drawBoxesAgent(Agent * agent, int tresor){
 	
 	int x, y;
-	if(agent->genre == MANANT){
-		MLV_draw_text_box(L_FENETRE-200, H_FENETRE-700, 100, 30, "Immobile", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
-		MLV_draw_text_box(L_FENETRE-225, H_FENETRE-650, 150, 30, "Déplacer", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
-	}
+	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-700, 150, 30, "Immobile", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-650, 150, 30, "Déplacer", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	MLV_draw_text_box(L_FENETRE-130, H_FENETRE-50, 100, 30, "Quitter" , 9, MLV_COLOR_WHITE, MLV_COLOR_BLACK, MLV_COLOR_WHITE, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+
+	if(agent->genre == MANANT && tresor >= CGUERRIER)
+		MLV_draw_text_box(L_FENETRE-225, H_FENETRE-600, 150, 30, "Devenir Guerrier", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+/*	else if(agent->genre == BARON || agent->genre == GUERRIER && )
+		MLV_draw_text_box(L_FENETRE-225, H_FENETRE-600, 150, 30, "Devenir Guerrier", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+*/
+	MLV_actualise_window();
+	
 	MLV_wait_mouse(&x, &y);
 	//Bouton rester immobile
-	if((x < L_FENETRE-100 && x > L_FENETRE-200) && (y < H_FENETRE-670 && y > H_FENETRE-700))
+	if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-670 && y > H_FENETRE-700)){
 		return 1;
+	}
 	//Bouton Déplacer
 	else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-620 && y > H_FENETRE-650))
 		return 2;
+	else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-570 && y > H_FENETRE-600) && agent->genre == MANANT)
+		return 3;
+	else if((x < L_FENETRE-30 && x > L_FENETRE-130) && (y < H_FENETRE-20 && y > H_FENETRE-50))
+		exit(EXIT_FAILURE);	
 	return 0;
 }
 
@@ -87,6 +99,10 @@ void drawArray(Monde world){
 			MLV_draw_rectangle((y*largeur)+(largeur/2)+10, (x*hauteur)+(hauteur/2)+10, largeur/2, hauteur/2, MLV_rgba(120,120,120,255));
 			//gros rectangle
 			MLV_draw_rectangle((y*largeur)+10, (x*hauteur)+10, largeur, hauteur, MLV_COLOR_WHITE);
+			if(world.plateau[x][y].clan == ROUGE)
+				MLV_draw_rectangle((y*largeur)+10, (x*hauteur)+10, largeur, hauteur, MLV_COLOR_RED);
+			else if(world.plateau[x][y].clan == BLEU)
+				MLV_draw_rectangle((y*largeur)+10, (x*hauteur)+10, largeur, hauteur, MLV_COLOR_BLUE);
 
 			if (chateau != NULL){
 				//CHATEAU
@@ -122,7 +138,6 @@ void drawArray(Monde world){
 			}
 		}
 	}
-	drawBoxes();
 }
 
 
