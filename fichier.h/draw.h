@@ -41,11 +41,12 @@ void drawIn(char* file, int largeur, int hauteur, int x, int y, char clan, char 
 
 void drawBoxes(){
 
-	MLV_draw_text_box(L_FENETRE-200, H_FENETRE-700, 100, 30, "Attendre", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-700, 150, 30, "Attendre", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
 	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-650, 150, 30, "Produire Baron", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
 	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-600, 150, 30, "Produire Guerrier", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
 	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-550, 150, 30, "Produire Manant" , 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
-	MLV_draw_text_box(L_FENETRE-130, H_FENETRE-50, 100, 30, "Quitter" , 9, MLV_COLOR_WHITE, MLV_COLOR_BLACK, MLV_COLOR_WHITE, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	MLV_draw_text_box(L_FENETRE-200, H_FENETRE-100, 150, 30, "Sauvegarder" , 9, MLV_COLOR_WHITE, MLV_COLOR_BLACK, MLV_COLOR_WHITE, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	MLV_draw_text_box(L_FENETRE-200, H_FENETRE-50, 150, 30, "Quitter" , 9, MLV_COLOR_WHITE, MLV_COLOR_BLACK, MLV_COLOR_WHITE, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
 	MLV_actualise_window();
 }
 
@@ -55,7 +56,8 @@ int drawBoxesAgent(Agent * agent, int tresor){
 	int x, y;
 	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-700, 150, 30, "Immobile", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
 	MLV_draw_text_box(L_FENETRE-225, H_FENETRE-650, 150, 30, "Déplacer", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
-	MLV_draw_text_box(L_FENETRE-130, H_FENETRE-50, 100, 30, "Quitter" , 9, MLV_COLOR_WHITE, MLV_COLOR_BLACK, MLV_COLOR_WHITE, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	MLV_draw_text_box(L_FENETRE-200, H_FENETRE-50, 150, 30, "Quitter" , 9, MLV_COLOR_WHITE, MLV_COLOR_BLACK, MLV_COLOR_WHITE, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	MLV_draw_text_box(L_FENETRE-200, H_FENETRE-100, 150, 30, "Sauvegarder" , 9, MLV_COLOR_WHITE, MLV_COLOR_BLACK, MLV_COLOR_WHITE, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
 
 	if(agent->genre == MANANT && tresor >= CGUERRIER)
 		MLV_draw_text_box(L_FENETRE-225, H_FENETRE-600, 150, 30, "Devenir Guerrier", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
@@ -63,8 +65,8 @@ int drawBoxesAgent(Agent * agent, int tresor){
 		MLV_draw_text_box(L_FENETRE-225, H_FENETRE-600, 150, 30, "Devenir Guerrier", 9, MLV_COLOR_VIOLET, MLV_COLOR_WHITE, MLV_COLOR_VIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
 */
 	MLV_actualise_window();
-	
 	MLV_wait_mouse(&x, &y);
+
 	//Bouton rester immobile
 	if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-670 && y > H_FENETRE-700)){
 		return 1;
@@ -74,7 +76,9 @@ int drawBoxesAgent(Agent * agent, int tresor){
 		return 2;
 	else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-570 && y > H_FENETRE-600) && agent->genre == MANANT)
 		return 3;
-	else if((x < L_FENETRE-30 && x > L_FENETRE-130) && (y < H_FENETRE-20 && y > H_FENETRE-50))
+	else if((x < L_FENETRE-50 && x > L_FENETRE-200) && (y < H_FENETRE-70 && y > H_FENETRE-100))
+		return 4;
+	else if((x < L_FENETRE-50 && x > L_FENETRE-200) && (y < H_FENETRE-20 && y > H_FENETRE-50))
 		exit(EXIT_FAILURE);	
 	return 0;
 }
@@ -87,7 +91,6 @@ void drawArray(Monde world){
 	
 	for (x = 0 ; x < NBLIG ; x++) {
 		for (y = 0 ; y < NBCOL ; y++) {
-			Agent* chateau = world.plateau[x][y].chateau;
 			Agent* habitant = world.plateau[x][y].habitant;
 			//haut gauche
 			MLV_draw_rectangle((y*largeur)+10, (x*hauteur)+10, largeur/2, hauteur/2, MLV_rgba(120,120,120,255));
@@ -104,13 +107,12 @@ void drawArray(Monde world){
 			else if(world.plateau[x][y].clan == BLEU)
 				MLV_draw_rectangle((y*largeur)+10, (x*hauteur)+10, largeur, hauteur, MLV_COLOR_BLUE);
 
-			if (chateau != NULL){
 				//CHATEAU
-				if (chateau->clan == ROUGE)
-					drawIn( "image/castleR.png", largeur, hauteur, chateau->posx, chateau->posy, chateau->clan, chateau->genre);
-				else
-					drawIn( "image/castleB.png", largeur, hauteur, chateau->posx, chateau->posy, chateau->clan, chateau->genre);
-			}
+			if (world.rouge != NULL)
+				drawIn( "image/castleR.png", largeur, hauteur, world.rouge->posx, world.rouge->posy, world.rouge->clan, world.rouge->genre);
+			if(world.bleu != NULL)
+				drawIn( "image/castleB.png", largeur, hauteur, world.bleu->posx, world.bleu->posy, world.bleu->clan, world.bleu->genre);
+		
 			if (habitant != NULL){
 				switch(habitant->genre){
 					case GUERRIER:
@@ -147,7 +149,7 @@ int clikBoxes(){
 	while(1){
 		MLV_wait_mouse(&x, &y);
 		//Bouton Attendre
-		if((x < L_FENETRE-100 && x > L_FENETRE-200) && (y < H_FENETRE-670 && y > H_FENETRE-700))
+		if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-670 && y > H_FENETRE-700))
 			return 'a';
 		//Bouton Produire Baron
 		else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-620 && y > H_FENETRE-650))
@@ -158,8 +160,10 @@ int clikBoxes(){
 		//Bouton Produire Manant
 		else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-520 && y > H_FENETRE-550))
 			return MANANT;
+		else if((x < L_FENETRE-50 && x > L_FENETRE-200) && (y < H_FENETRE-70 && y > H_FENETRE-100))
+			return 's';	
 		//Bouton Quitter
-		else if((x < L_FENETRE-30 && x > L_FENETRE-130) && (y < H_FENETRE-20 && y > H_FENETRE-50)){
+		else if((x < L_FENETRE-50 && x > L_FENETRE-200) && (y < H_FENETRE-20 && y > H_FENETRE-50)){
 			exit(EXIT_FAILURE);
 		}
 	}

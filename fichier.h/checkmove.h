@@ -4,18 +4,20 @@ int tireDe(){
 }
 
 int coup(Agent agent, int de){
-	int cou;
+	int cou = 0;
 	if (agent.genre == BARON){
 		cou = de*CBARON;
 	}
-	if (agent.genre == GUERRIER){
+	else if (agent.genre == GUERRIER){
 		cou = de*CGUERRIER;
 	}
+	return cou;
+
 }
 
 void attaque(Agent *agent, Agent *agent2, Monde *world){
 	int de1, de2, coup1, coup2;
-	AListe tmp, prec, suiv;
+	AListe tmp, prec = NULL, suiv;
 	if((agent->genre == BARON || agent->genre == GUERRIER) && (agent2->genre == BARON || agent2->genre == GUERRIER) && (agent->clan != agent2->clan)) { 
 		do{ 
 			de1 = tireDe();
@@ -57,8 +59,6 @@ void attaque(Agent *agent, Agent *agent2, Monde *world){
 
 
 
-
-
 int contourAgent(Agent *agent, Monde *world){
 	AListe agentdest = world->plateau[agent->destx][agent->desty].habitant;
 	if(agent->posx == agent->destx -1 && agent->posy == agent->desty  && agentdest != NULL){
@@ -90,231 +90,232 @@ int contourAgent(Agent *agent, Monde *world){
 
 
 
-int checkPosition(Case plateau[NBLIG][NBCOL], Agent* chateau, int *x, int *y){
+int checkPosition(Case plateau[NBLIG][NBCOL], AListe* chateau, int *x, int *y){
 
-	if(chateau->posx == 0 && chateau->posy == 0){
-		if(plateau[chateau->posx +1][chateau->posy].habitant == NULL && plateau[chateau->posx +1][chateau->posy].chateau == NULL){
-			*x = chateau->posx+1;
-			*y = chateau->posy;
+	if((*chateau)->posx == 0 && (*chateau)->posy == 0){
+		if(plateau[(*chateau)->posx +1][(*chateau)->posy].habitant == NULL && plateau[(*chateau)->posx +1][(*chateau)->posy].chateau == NULL){
+			*x = (*chateau)->posx+1;
+			*y = (*chateau)->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx;
-			*y = chateau->posy +1;
+		else if(plateau[(*chateau)->posx ][(*chateau)->posy +1].habitant == NULL && plateau[(*chateau)->posx ][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx;
+			*y = (*chateau)->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy +1].habitant == NULL  && plateau[chateau->posx +1][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx +1;
-			*y = chateau->posy +1;
+		else if(plateau[(*chateau)->posx +1][(*chateau)->posy +1].habitant == NULL  && plateau[(*chateau)->posx +1][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx +1;
+			*y = (*chateau)->posy +1;
 			return 0;
 		}
 	}
 
-	else if(chateau->posx == NBLIG-1 && chateau->posy == 0){
-		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL  && plateau[chateau->posx -1][chateau->posy].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy;
+	else if((*chateau)->posx == NBLIG-1 && (*chateau)->posy == 0){
+		if(plateau[(*chateau)->posx -1][(*chateau)->posy].habitant == NULL  && plateau[(*chateau)->posx -1][(*chateau)->posy].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy +1].habitant == NULL  && plateau[chateau->posx -1][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy +1;
+		else if(plateau[(*chateau)->posx -1][(*chateau)->posy +1].habitant == NULL  && plateau[(*chateau)->posx -1][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx;
-			*y = chateau->posy +1;
-			return 0;
-		}
-	}
-
-	else if(chateau->posx == NBLIG-1 && chateau->posy == NBCOL-1){
-		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL && plateau[chateau->posx -1][chateau->posy].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy;
-			return 0;
-		}
-		else if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL  && plateau[chateau->posx ][chateau->posy -1].chateau == NULL){
-			*x = chateau->posx;
-			*y = chateau->posy -1;
-		}
-		else if(plateau[chateau->posx -1][chateau->posy -1].habitant == NULL  && plateau[chateau->posx -1][chateau->posy -1].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy -1;
+		else if(plateau[(*chateau)->posx ][(*chateau)->posy +1].habitant == NULL && plateau[(*chateau)->posx ][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx;
+			*y = (*chateau)->posy +1;
 			return 0;
 		}
 	}
 
-	else if(chateau->posx == 0 && chateau->posy == NBCOL-1){
-		if(plateau[chateau->posx +1][chateau->posy].habitant == NULL  && plateau[chateau->posx +1][chateau->posy].chateau == NULL){
-			*x = chateau->posx +1;
-			*y = chateau->posy;
+	else if((*chateau)->posx == NBLIG-1 && (*chateau)->posy == NBCOL-1){
+		if(plateau[(*chateau)->posx -1][(*chateau)->posy].habitant == NULL && plateau[(*chateau)->posx -1][(*chateau)->posy].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy -1].habitant == NULL  && plateau[chateau->posx +1][chateau->posy -1].chateau == NULL){
-			*x = chateau->posx +1;
-			*y = chateau->posy -1;
+		else if(plateau[(*chateau)->posx ][(*chateau)->posy -1].habitant == NULL  && plateau[(*chateau)->posx ][(*chateau)->posy -1].chateau == NULL){
+			*x = (*chateau)->posx;
+			*y = (*chateau)->posy -1;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL && plateau[chateau->posx ][chateau->posy -1].chateau == NULL){
-			*x = chateau->posx;
-			*y = chateau->posy -1;
-			return 0;
-		}
-	}
-
-	else if(chateau->posx != 0 && chateau->posx != NBLIG-1 && chateau->posy == 0){
-		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL && plateau[chateau->posx -1][chateau->posy].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy;
-			return 0;
-		}
-		else if(plateau[chateau->posx -1][chateau->posy +1].habitant == NULL && plateau[chateau->posx -1][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy +1;
-			return 0;
-		}
-		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx;
-			*y = chateau->posy +1;
-			return 0;
-		}
-		else if(plateau[chateau->posx +1][chateau->posy +1].habitant == NULL && plateau[chateau->posx +1][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx +1;
-			*y = chateau->posy +1;
-			return 0;
-		}
-		else if(plateau[chateau->posx +1][chateau->posy].habitant == NULL && plateau[chateau->posx +1][chateau->posy].chateau == NULL){
-			*x = chateau->posx +1;
-			*y = chateau->posy;
+		else if(plateau[(*chateau)->posx -1][(*chateau)->posy -1].habitant == NULL  && plateau[(*chateau)->posx -1][(*chateau)->posy -1].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy -1;
 			return 0;
 		}
 	}
 
-	else if(chateau->posx == 0 && chateau->posy != 0 && chateau->posy != NBCOL-1){
-		if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL && plateau[chateau->posx ][chateau->posy -1].chateau == NULL){
-			*x = chateau->posx ;
-			*y = chateau->posy -1;
+	else if((*chateau)->posx == 0 && (*chateau)->posy == NBCOL-1){
+		if(plateau[(*chateau)->posx +1][(*chateau)->posy].habitant == NULL  && plateau[(*chateau)->posx +1][(*chateau)->posy].chateau == NULL){
+			*x = (*chateau)->posx +1;
+			*y = (*chateau)->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy -1].habitant == NULL && plateau[chateau->posx +1][chateau->posy -1].chateau == NULL){
-			*x = chateau->posx +1;
-			*y = chateau->posy -1;
+		else if(plateau[(*chateau)->posx +1][(*chateau)->posy -1].habitant == NULL  && plateau[(*chateau)->posx +1][(*chateau)->posy -1].chateau == NULL){
+			*x = (*chateau)->posx +1;
+			*y = (*chateau)->posy -1;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy].habitant == NULL && plateau[chateau->posx +1][chateau->posy].chateau == NULL){
-			*x = chateau->posx +1;
-			*y = chateau->posy;
-			return 0;
-		}
-		else if(plateau[chateau->posx +1][chateau->posy +1].habitant == NULL && plateau[chateau->posx +1][chateau->posy -1].chateau == NULL){
-			*x = chateau->posx +1;
-			*y = chateau->posy +1;
-			return 0;
-		}
-		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx ;
-			*y = chateau->posy +1;
+		else if(plateau[(*chateau)->posx ][(*chateau)->posy -1].habitant == NULL && plateau[(*chateau)->posx ][(*chateau)->posy -1].chateau == NULL){
+			*x = (*chateau)->posx;
+			*y = (*chateau)->posy -1;
 			return 0;
 		}
 	}
 
-	else if(chateau->posx == NBLIG-1 && chateau->posy != 0 && chateau->posy == NBCOL-1){
-		if(plateau[chateau->posx][chateau->posy -1].habitant == NULL && plateau[chateau->posx ][chateau->posy -1].chateau == NULL){
-			*x = chateau->posx ;
-			*y = chateau->posy -1;
+	else if((*chateau)->posx != 0 && (*chateau)->posx != NBLIG-1 && (*chateau)->posy == 0){
+		if(plateau[(*chateau)->posx -1][(*chateau)->posy].habitant == NULL && plateau[(*chateau)->posx -1][(*chateau)->posy].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy -1].habitant == NULL  && plateau[chateau->posx -1][chateau->posy -1].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy -1;
+		else if(plateau[(*chateau)->posx -1][(*chateau)->posy +1].habitant == NULL && plateau[(*chateau)->posx -1][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy].habitant == NULL && plateau[chateau->posx -1][chateau->posy].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy;
+		else if(plateau[(*chateau)->posx ][(*chateau)->posy +1].habitant == NULL && plateau[(*chateau)->posx ][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx;
+			*y = (*chateau)->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy +1].habitant == NULL && plateau[chateau->posx -1][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy +1;
+		else if(plateau[(*chateau)->posx +1][(*chateau)->posy +1].habitant == NULL && plateau[(*chateau)->posx +1][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx +1;
+			*y = (*chateau)->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx ;
-			*y = chateau->posy +1;
+		else if(plateau[(*chateau)->posx +1][(*chateau)->posy].habitant == NULL && plateau[(*chateau)->posx +1][(*chateau)->posy].chateau == NULL){
+			*x = (*chateau)->posx +1;
+			*y = (*chateau)->posy;
 			return 0;
 		}
 	}
 
-	else if(chateau->posy == NBCOL-1 && chateau->posx != 0 && chateau->posx != NBLIG-1){
-		if(plateau[chateau->posx -1][chateau->posy].habitant == NULL && plateau[chateau->posx -1][chateau->posy].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy;
+	else if((*chateau)->posx == 0 && (*chateau)->posy != 0 && (*chateau)->posy != NBCOL-1){
+		if(plateau[(*chateau)->posx ][(*chateau)->posy -1].habitant == NULL && plateau[(*chateau)->posx ][(*chateau)->posy -1].chateau == NULL){
+			*x = (*chateau)->posx ;
+			*y = (*chateau)->posy -1;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy +1].habitant == NULL && plateau[chateau->posx -1][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy +1;
+		else if(plateau[(*chateau)->posx +1][(*chateau)->posy -1].habitant == NULL && plateau[(*chateau)->posx +1][(*chateau)->posy -1].chateau == NULL){
+			*x = (*chateau)->posx +1;
+			*y = (*chateau)->posy -1;
 			return 0;
 		}
-		else if(plateau[chateau->posx][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx;
-			*y = chateau->posy +1;
+		else if(plateau[(*chateau)->posx +1][(*chateau)->posy].habitant == NULL && plateau[(*chateau)->posx +1][(*chateau)->posy].chateau == NULL){
+			*x = (*chateau)->posx +1;
+			*y = (*chateau)->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy +1].habitant == NULL && plateau[chateau->posx +1][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx +1;
-			*y = chateau->posy +1;
+		else if(plateau[(*chateau)->posx +1][(*chateau)->posy +1].habitant == NULL && plateau[(*chateau)->posx +1][(*chateau)->posy -1].chateau == NULL){
+			*x = (*chateau)->posx +1;
+			*y = (*chateau)->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy].habitant == NULL && plateau[chateau->posx +1][chateau->posy].chateau == NULL){
-			*x = chateau->posx +1;
-			*y = chateau->posy;
+		else if(plateau[(*chateau)->posx ][(*chateau)->posy +1].habitant == NULL && plateau[(*chateau)->posx ][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx ;
+			*y = (*chateau)->posy +1;
+			return 0;
+		}
+	}
+
+	else if((*chateau)->posx == NBLIG-1 && (*chateau)->posy != 0 && (*chateau)->posy == NBCOL-1){
+		if(plateau[(*chateau)->posx][(*chateau)->posy -1].habitant == NULL && plateau[(*chateau)->posx ][(*chateau)->posy -1].chateau == NULL){
+			*x = (*chateau)->posx ;
+			*y = (*chateau)->posy -1;
+			return 0;
+		}
+		else if(plateau[(*chateau)->posx -1][(*chateau)->posy -1].habitant == NULL  && plateau[(*chateau)->posx -1][(*chateau)->posy -1].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy -1;
+			return 0;
+		}
+		else if(plateau[(*chateau)->posx -1][(*chateau)->posy].habitant == NULL && plateau[(*chateau)->posx -1][(*chateau)->posy].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy;
+			return 0;
+		}
+		else if(plateau[(*chateau)->posx -1][(*chateau)->posy +1].habitant == NULL && plateau[(*chateau)->posx -1][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy +1;
+			return 0;
+		}
+		else if(plateau[(*chateau)->posx ][(*chateau)->posy +1].habitant == NULL && plateau[(*chateau)->posx ][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx ;
+			*y = (*chateau)->posy +1;
+			return 0;
+		}
+	}
+
+	else if((*chateau)->posy == NBCOL-1 && (*chateau)->posx != 0 && (*chateau)->posx != NBLIG-1){
+		if(plateau[(*chateau)->posx -1][(*chateau)->posy].habitant == NULL && plateau[(*chateau)->posx -1][(*chateau)->posy].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy;
+			return 0;
+		}
+		else if(plateau[(*chateau)->posx -1][(*chateau)->posy +1].habitant == NULL && plateau[(*chateau)->posx -1][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy +1;
+			return 0;
+		}
+		else if(plateau[(*chateau)->posx][(*chateau)->posy +1].habitant == NULL && plateau[(*chateau)->posx ][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx;
+			*y = (*chateau)->posy +1;
+			return 0;
+		}
+		else if(plateau[(*chateau)->posx +1][(*chateau)->posy +1].habitant == NULL && plateau[(*chateau)->posx +1][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx +1;
+			*y = (*chateau)->posy +1;
+			return 0;
+		}
+		else if(plateau[(*chateau)->posx +1][(*chateau)->posy].habitant == NULL && plateau[(*chateau)->posx +1][(*chateau)->posy].chateau == NULL){
+			*x = (*chateau)->posx +1;
+			*y = (*chateau)->posy;
 			return 0;
 		}
 	}	
 
-	else if(chateau->posx != NBLIG-1 && chateau->posx != 0 && chateau->posy != NBCOL-1 && chateau->posy != 0){
+	else if((*chateau)->posx != NBLIG-1 && (*chateau)->posx != 0 && (*chateau)->posy != NBCOL-1 && (*chateau)->posy != 0){
 
-		if(plateau[chateau->posx +1][chateau->posy].habitant == NULL && plateau[chateau->posx +1][chateau->posy].chateau == NULL){
-			*x = chateau->posx+1;
-			*y = chateau->posy;
+		if(plateau[(*chateau)->posx +1][(*chateau)->posy].habitant == NULL && plateau[(*chateau)->posx +1][(*chateau)->posy].chateau == NULL){
+			*x = (*chateau)->posx+1;
+			*y = (*chateau)->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx +1][chateau->posy +1].habitant ==NULL && plateau[chateau->posx +1][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx +1;
-			*y = chateau->posy +1;
+		else if(plateau[(*chateau)->posx +1][(*chateau)->posy +1].habitant ==NULL && plateau[(*chateau)->posx +1][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx +1;
+			*y = (*chateau)->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy +1].habitant == NULL && plateau[chateau->posx ][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx;
-			*y = chateau->posy +1;
+		else if(plateau[(*chateau)->posx ][(*chateau)->posy +1].habitant == NULL && plateau[(*chateau)->posx ][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx;
+			*y = (*chateau)->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy].habitant == NULL && plateau[chateau->posx -1][chateau->posy].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy;
+		else if(plateau[(*chateau)->posx -1][(*chateau)->posy].habitant == NULL && plateau[(*chateau)->posx -1][(*chateau)->posy].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy +1].habitant ==NULL && plateau[chateau->posx -1][chateau->posy +1].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy +1;
+		else if(plateau[(*chateau)->posx -1][(*chateau)->posy +1].habitant ==NULL && plateau[(*chateau)->posx -1][(*chateau)->posy +1].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy +1;
 			return 0;
 		}
-		else if(plateau[chateau->posx -1][chateau->posy -1].habitant ==NULL && plateau[chateau->posx -1][chateau->posy -1].chateau == NULL){
-			*x = chateau->posx -1;
-			*y = chateau->posy -1;
+		else if(plateau[(*chateau)->posx -1][(*chateau)->posy -1].habitant ==NULL && plateau[(*chateau)->posx -1][(*chateau)->posy -1].chateau == NULL){
+			*x = (*chateau)->posx -1;
+			*y = (*chateau)->posy -1;
 			return 0;
 		}
-		else if(plateau[chateau->posx ][chateau->posy -1].habitant == NULL && plateau[chateau->posx ][chateau->posy -1].chateau == NULL){
-			*x = chateau->posx;
-			*y = chateau->posy -1;
+		else if(plateau[(*chateau)->posx ][(*chateau)->posy -1].habitant == NULL && plateau[(*chateau)->posx ][(*chateau)->posy -1].chateau == NULL){
+			*x = (*chateau)->posx;
+			*y = (*chateau)->posy -1;
 			return 0;
 		}	
-		else if(plateau[chateau->posx +1][chateau->posy -1].habitant ==NULL && plateau[chateau->posx +1][chateau->posy -1].chateau == NULL){
-			*x = chateau->posx +1;
-			*y = chateau->posy -1;
+		else if(plateau[(*chateau)->posx +1][(*chateau)->posy -1].habitant ==NULL && plateau[(*chateau)->posx +1][(*chateau)->posy -1].chateau == NULL){
+			*x = (*chateau)->posx +1;
+			*y = (*chateau)->posy -1;
 			return 0;
 		}
 	}
