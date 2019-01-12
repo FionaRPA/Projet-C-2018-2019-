@@ -39,12 +39,15 @@ int menu() {
 
 	MLV_draw_filled_rectangle(L_FENETRE*0.1, H_FENETRE*0.01 + hauteur_txt, L_FENETRE*0.8, H_FENETRE*0.03, MLV_COLOR_DARK_GREEN);
 
-	taille = L_FENETRE*0.1;
-	recupereDimensionBouton("Jouer", taille, &largeur, &hauteur);
-	Bouton jouer = placeBouton("Jouer", L_FENETRE/2 - largeur/2, H_FENETRE*0.5, taille, MLV_COLOR_GREEN3);
+	taille = L_FENETRE*0.07;
+	recupereDimensionBouton("Nouvelle Partie", taille, &largeur, &hauteur);
+	Bouton jouer = placeBouton("Nouvelle Partie", L_FENETRE/2 - largeur/2, H_FENETRE*0.5, taille, MLV_COLOR_GREEN3);
+
+	recupereDimensionBouton("Partie Sauvegardé", taille, &largeur, &hauteur);
+	Bouton sauvegarder = placeBouton("Partie Sauvegardé", L_FENETRE/2 - largeur/2, jouer.y2 + 2*taille/10, taille, MLV_COLOR_GREEN3);
 
 	recupereDimensionBouton("Quitter", taille, &largeur, &hauteur);
-	Bouton quitter = placeBouton("Quitter", L_FENETRE/2 - largeur/2, jouer.y2 + 2*taille/10, taille, MLV_COLOR_GREEN3);
+	Bouton quitter = placeBouton("Quitter", L_FENETRE/2 - largeur/2, sauvegarder.y2 + 2*taille/10, taille, MLV_COLOR_GREEN3);
 
 	MLV_actualise_window();
 
@@ -55,6 +58,8 @@ int menu() {
 		event = MLV_get_event(NULL, NULL, NULL, NULL, NULL, &x, &y, NULL, NULL);
 		if ( event == MLV_MOUSE_BUTTON && x > jouer.x1 && x < jouer.x2 && y > jouer.y1 && y < jouer.y2 )
 			return 0;
+		if ( event == MLV_MOUSE_BUTTON && x > sauvegarder.x1 && x < sauvegarder.x2 && y > sauvegarder.y1 && y < sauvegarder.y2 )
+			exit(EXIT_FAILURE);
 		if ( event == MLV_MOUSE_BUTTON && x > quitter.x1 && x < quitter.x2 && y > quitter.y1 && y < quitter.y2 )
 			exit(EXIT_FAILURE);
 	}
