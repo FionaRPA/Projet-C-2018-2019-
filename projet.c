@@ -1,6 +1,8 @@
 #include "fichier.h/draw.h"
-#include "fichier.h/menu.h"
+#include "fichier.h/createAndAdd.h"
+#include "fichier.h/attack.h"
 #include "fichier.h/checkmove.h"
+#include "fichier.h/menu.h"
 
 
 
@@ -39,118 +41,6 @@ void afficheListec(AListe L, Monde *world){
 	}
 	printf("\n");
 }
-/*
--- Cette fonction renvoie le chateau que l'on créé en initialisant son clan, sa destination (-2 car il est immobile), son genre,
--- ses positions, s'il est en production (-1 s'il ne l'est pas), et le temps restant pour une production (initialement à 0).
-*/
-AListe createCastle(char couleur, int x, int y){
-
-	AListe chateau = (Agent *) malloc(sizeof(Agent));
-	if(chateau != NULL){
-		chateau->clan = couleur;
-		chateau->destx = chateau->desty = -1;
-		chateau->genre = CHATEAU;
-		chateau->produit = -1;
-		chateau->temps = 0;
-		chateau->posx = x;
-		chateau->posy = y;
-
-		chateau->vsuiv = NULL;
-		chateau->vprec = NULL;
-	}
-	return chateau;
-}
-/*
--- On renvoie l'agent que l'on créé en initialisant son clan, sa destination, son genre,
--- ses positions.
-*/
-Agent* createAgent(char couleur, char genre, int x, int y){
-
-	Agent* tmp;
-	tmp = (Agent *) malloc(sizeof(Agent));
-	if (tmp != NULL){
-		tmp->clan = couleur;
-		tmp->genre = genre;
-		tmp->posx = x;
-		tmp->posy = y;
-		tmp->destx = tmp->desty = -1;
-
-		tmp->asuiv = NULL;
-		tmp->aprec = NULL;
-	}
-	return tmp;
-}
-
-AListe createClan(Monde *world, AListe chateau){
-	
-	AListe tmp;
-	tmp = (Agent *) malloc(sizeof(Agent));
-	if (tmp != NULL){
-		tmp = chateau;
-		tmp->vsuiv = NULL;
-		tmp->vprec = NULL;
-		tmp->asuiv = NULL;
-		tmp->aprec = NULL;
-	}
-	return tmp;
-}
-
-void createMonde(Monde *world){
-	
-	int x, y;
-	Case cases;
-	cases.chateau = cases.habitant = NULL;
-	cases.clan = LIBRE;
-
-	for (x = 0 ; x < NBLIG ; x++) 
-		for (y = 0 ; y < NBCOL ; y++)
- 			world->plateau[x][y]= cases;
-
-	world->tour = 1;
-	world->tresorBleu = world->tresorRouge = 50;
-	world->rouge = NULL;
-	world->bleu = NULL;
-}
-
-/*fonction qui ajoute un chateau dans son clan "rouge" ou "bleu"*/
-void addInClan(Agent *chateau, AListe *clan){
-
-	AListe cursor = *clan;
-	if (cursor == NULL)
-		*clan = chateau;
-	else {
-		while(cursor->vsuiv != NULL){
-			cursor = cursor->vsuiv;
-		}
-		chateau->vprec = cursor;
-		cursor->vsuiv = chateau;
-	}
-}
-
-int addAndTri(Agent *agent, AListe *listHab, Monde *world, char couleur, char genre, int x, int y){
-
- 	AListe cell = *listHab;
-	agent = createAgent(couleur, genre, x, y);
-	world->plateau[agent->posx][agent->posy].habitant = agent;
-	AListe before = NULL;
-
-	if(agent == NULL)
-		return -1;
-	while(cell != NULL && cell->genre < agent->genre){
-		before = cell;
-		cell = cell->asuiv;
-	}
-	agent->asuiv = cell;
-	agent->aprec = before;
-	if(before == NULL){
-		*listHab = agent;
-	}
-	else{
-		agent->aprec = before;
-		before->asuiv = agent;
-	}
-	return 0;
-}
 
 int castleInList(AListe clan){
 
@@ -161,6 +51,139 @@ int castleInList(AListe clan){
 	}
 	return 0;
 }
+
+/*
+-- Cette fonction sauvegarde notre partie au point où on l'a laissé
+*/
+void save(AListe clanRouge, AListe clanBleu, Monde world){
+
+	AListe clan = clanRouge;
+
+	FILE * fichier = NULL;
+	fichier = fopen("save.txt", "w+");
+	//Le Monde 
+	fprintf(fichier, "%d %d %d", world.tour, world.tresorRouge, world.tresorBleu);
+	//Parcours liste du clan Rouge
+	for(; clan != NULL; clan=clan->vsuiv){
+		//Chateau !!
+		fprintf(fichier, "\n%c%c %d %d \n%c %d", clan->clan, clan->genre, clan->posx, clan->posy, clan->produit, clan->temps);
+		AListe tmp = world.plateau[clan->posx][clan->posy].habitant;
+		//Parcours la liste des habitants contenu dans ce chateau
+		for(;tmp != NULL; tmp=tmp->asuiv){
+			fprintf(fichier, "\n%c%c %d %d %d %d",tmp->clan, tmp->genre, tmp->posx, tmp->posy, tmp->destx, tmp->desty);
+		}
+	}
+	clan = clanBleu;
+	//Parcours liste du can Bleu
+	for(;clan != NULL; clan=clan->vsuiv){
+		//Chateau
+		fprintf(fichier, "\n%c%c %d %d \n%c %d", clan->clan, clan->genre, clan->posx, clan->posy, clan->produit, clan->temps);
+		AListe tmp = world.plateau[clan->posx][clan->posy].habitant;
+		//Liste des habitants du chateau
+		for(;tmp != NULL; tmp=tmp->asuiv){
+			fprintf(fichier, "\n%c%c %d %d %d %d",tmp->clan, tmp->genre, tmp->posx, tmp->posy, tmp->destx, tmp->desty);
+		}
+	}
+	fclose(fichier);
+}
+
+/*
+-- Fonction pour commencer avec une partie déjà sauvegarder 
+*/
+void loadedGame(Monde *world){
+
+	char chaine[100] = "";
+	int largeur_txt, hauteur_txt, nbR=0, nbB=0;
+	Agent *agent = (Agent *) malloc(sizeof(Agent));
+	AListe chateau = (Agent *) malloc(sizeof(Agent));
+	AListe listHab = NULL;
+	AListe rouge = world->rouge;
+	AListe bleu = world->bleu;
+	
+	FILE* fichier = NULL;
+	fichier = fopen("save.txt", "r");
+
+	if(fichier == NULL){
+
+		MLV_clear_window(MLV_COLOR_DARKSEAGREEN1);
+		MLV_Font* font = MLV_load_font("image/A Box For.ttf", L_FENETRE*0.2);
+
+		MLV_get_size_of_text_with_font("Aucun Fichier", &largeur_txt, &hauteur_txt, font);
+		MLV_draw_text_with_font((L_FENETRE-largeur_txt-50)/2, H_FENETRE*0.01, "Aucun Fichier", font, MLV_COLOR_GREEN4);
+
+		MLV_get_size_of_text_with_font("en Sauvegarde", &largeur_txt, &hauteur_txt, font);
+		MLV_draw_text_with_font((L_FENETRE-largeur_txt)/2, H_FENETRE/2, "en Sauvegarde", font, MLV_COLOR_GREEN4);
+		MLV_free_font(font);
+		MLV_actualise_window();
+		MLV_wait_mouse(NULL, NULL);
+	}
+	else{
+		int ret = fscanf(fichier, "%d %d %d", &(world->tour), &(world->tresorRouge), &(world->tresorBleu));
+		//printf("t:%d, r:%d, b:%d\n", world->tour, world->tresorRouge, world->tresorBleu);
+
+		while(fgets(chaine, 100, fichier) != NULL && ret != 0){
+
+			agent->clan = fgetc(fichier);
+
+			agent->genre = fgetc(fichier);
+			//printf("g: %c\n", agent->genre);
+
+			ret = fscanf(fichier,"%d %d", &(agent->posx), &(agent->posy));
+			//printf("x: %d, y: %d\n", agent->posx, agent->posy);
+
+			if(agent->genre == CHATEAU){
+
+				listHab = NULL;
+				char *res = fgets(chaine, 100, fichier);
+				if(res != 0){
+					agent->produit = fgetc(fichier);
+					//printf("p: %c\n", agent->produit);
+
+					ret = fscanf(fichier, "%d", &(agent->temps));
+					//printf("t: %d\n", agent->temps);
+				}
+
+				chateau = agent;
+
+				chateau->vsuiv = NULL;
+				chateau->vprec = NULL;
+				chateau->asuiv = NULL;
+				chateau->aprec = NULL;
+
+				world->plateau[chateau->posx][chateau->posy].chateau = chateau;
+				if(chateau->clan == ROUGE){
+					if(nbR == 0){
+						rouge = createClan(world, chateau);
+						nbR++;
+					}
+					else
+						addInClan(chateau, &(rouge));
+				}else if(chateau->clan == BLEU){
+					if(nbB == 0){
+						bleu = createClan(world, chateau);
+						nbB++;
+					}
+					else
+						addInClan(chateau, &(bleu));
+				}
+			}
+			else if(agent->genre != CHATEAU){
+				ret = fscanf(fichier,"%d %d", &(agent->destx), &(agent->desty));
+				//printf("dx: %d, dy: %d\n", agent->destx, agent->desty);
+
+				agent->asuiv = NULL;
+				agent->aprec = NULL;
+				world->plateau[agent->posx][agent->posy].habitant = agent;
+				addInChateau(agent, &listHab);
+				//afficheListeChateau(listHab);
+				world->plateau[chateau->posx][chateau->posy].habitant = listHab;
+				//afficheListec(world->rouge,world);
+			}
+		}
+	}
+	fclose(fichier);
+}
+
 
 void initArray(char couleur, AListe *clan, Monde *world, int x, int y){
 
@@ -174,16 +197,11 @@ void initArray(char couleur, AListe *clan, Monde *world, int x, int y){
 	checkPosition(world->plateau, &chateau, &x, &y);
 	Agent* manant = createAgent(couleur, MANANT, x, y);
 	addAndTri( manant, &listHab, world, couleur, MANANT, x , y);
-	//afficheListec(listHab, world);
 
 	checkPosition(world->plateau, &chateau, &x, &y);
 	Agent* baron = createAgent(couleur, BARON, x, y);
 	addAndTri( baron, &listHab, world, couleur, BARON, x , y);	
 	world->plateau[chateau->posx][chateau->posy].habitant = listHab;
-	//printf("-------Liste Chateau---------\n");
-	//afficheListec(chateau, world);
-	//afficheListec(listHab);
-	//printf("\n");
 }
 
 void castleAgent(char couleur, char *genre, Monde *world, AListe* chateau){
@@ -220,14 +238,14 @@ int checkProduction(int cout, int temps, char choix, int *tresor, AListe *chatea
 		return -1;
 	}
 	return 0;
-} 
+}
 
 void castleProduction(char couleur, int *tresor, AListe *chateau, Monde *world){
 	
 	int solve;
 	char choix;
 	AListe tmp = *chateau;
-	if(tmp->produit == -1){
+	if(tmp->produit == LIBRE){
 		do{
 			choix = clikBoxes();
 			switch(choix){
@@ -243,12 +261,18 @@ void castleProduction(char couleur, int *tresor, AListe *chateau, Monde *world){
 				case MANANT:
 					solve = checkProduction(CMANANT, TMANANT, MANANT, tresor, chateau, world);
 					break;
+				case 's':
+					save(world->rouge, world->bleu, *world);
+					MLV_draw_text(L_FENETRE-220, H_FENETRE-500, "Partie Sauvegardé ", MLV_COLOR_YELLOW);
+					MLV_draw_text(L_FENETRE-220, H_FENETRE-480, "Cliquer sur Quitter ", MLV_COLOR_YELLOW);
+					MLV_actualise_window();
+					castleProduction(couleur, tresor, chateau, world);
 			}
 		}while(solve == -1);
 	}
 	else if(tmp->temps == 1){
 		castleAgent(couleur, &(tmp->produit), world, chateau);
-		tmp->produit = -1;
+		tmp->produit = LIBRE;
 		actuMonde(*world, couleur);
 	}
 	else if(tmp->temps > 1){
@@ -270,13 +294,15 @@ void parcoursCastle(char couleur, AListe agent, Monde *world, int *tresor){
 	MLV_draw_text(L_FENETRE-235, H_FENETRE-480, " coordonnée : [%d,%d]", MLV_COLOR_WHITE,  agent->posx, agent->posy);
 	MLV_actualise_window();
 
-	//Si l'agent n'est pas encore arrivé à destination on continue de la bouger automatiquement
+	//Si l'agent n'est pas encore arrivé à destination on continue de le bouger automatiquement
 	if((agent->destx > -1 || agent->desty > -1 )){
 		moveAgent(agent, world, *tresor);
+		actuMonde(*world, couleur);
 		if(agent->posx == agent->destx && agent->posy == agent->desty){
-			// ou egale a LIBRE ?????
-				agent->destx = -1;
-				agent->desty = -1;
+			if(world->plateau[agent->posx][agent->posy].clan != agent->clan && world->plateau[agent->posx][agent->posy].clan != LIBRE)
+				world->plateau[agent->posx][agent->posy].clan = LIBRE;
+			agent->destx = -1;
+			agent->desty = -1;
 		}
 	}
 	//Production de richesse par mannant
@@ -318,7 +344,14 @@ void parcoursCastle(char couleur, AListe agent, Monde *world, int *tresor){
 						world->tresorBleu -= CGUERRIER;
 				}
 			}
-		}while(res == 0 && res == 4);
+			else if(res == 4){
+				save(world->rouge, world->bleu, *world);
+				MLV_draw_text(L_FENETRE-220, H_FENETRE-450, "Partie Sauvegardé ", MLV_COLOR_YELLOW);
+				MLV_draw_text(L_FENETRE-220, H_FENETRE-435, "Cliquer sur Quitter ", MLV_COLOR_YELLOW);
+				MLV_actualise_window();
+
+			}
+		}while(res == 0 || res == 4);
 	}
 }
 
@@ -345,26 +378,24 @@ void parcoursClan(char couleur, AListe equipe, Monde *world, int *tresor){
 		}
 	}
 }
-/*
-void sauvegarde(ALitse clanRouge, AListe clanBleu, Monde world){
 
-	AListe rouge = clanRouge;
-	AListe bleu = clanBleu;
+void perdu(char* message){
 
-	FILE * fichier = NULL;
-	fichier = fopen("save.txt", "w+");
+	int largeur_txt, hauteur_txt;
 
-	for(; rouge != NULL; rouge=rouge->vsuiv){
-		//Chateau !!
-		fprintf(fichier, "%c %d %d\n", rouge->genre, rouge->posx, rouge->posy);
-		
-		AListe tmp = world.plateau[rouge->posx][rouge->posy].habitant;
-		for(;tmp != NULL; tmp=tmp->asuiv){
+	MLV_clear_window(MLV_COLOR_DARKSEAGREEN1);
 
-		}
-	}
+	MLV_Font* font = MLV_load_font("image/A Box For.ttf", L_FENETRE*0.2);
+
+	MLV_get_size_of_text_with_font(message, &largeur_txt, &hauteur_txt, font);
+	MLV_draw_text_with_font((L_FENETRE-largeur_txt-50)/2, H_FENETRE*0.01, message, font, MLV_COLOR_GREEN4);
+
+	MLV_get_size_of_text_with_font("A PERDU!", &largeur_txt, &hauteur_txt, font);
+	MLV_draw_text_with_font((L_FENETRE-largeur_txt)/2, H_FENETRE/2, "A PERDU!", font, MLV_COLOR_GREEN4);
+	MLV_free_font(font);
+	MLV_actualise_window();
+	MLV_wait_mouse(NULL, NULL);
 }
-*/
 
 /*
 -- C'est une fonction principale, qui gère le jeu.
@@ -373,10 +404,18 @@ void sauvegarde(ALitse clanRouge, AListe clanBleu, Monde world){
 void jeu(Monde *world){
 	
 	int joueur;
+
 	while(1){
 		joueur = MLV_get_random_integer(0,100);
-		if (castleInList(world->rouge) == 0 || castleInList(world->bleu) == 0){
-			printf("perdu\n");
+		if (castleInList(world->rouge) == 0){
+			printf("hey\n");
+			perdu("L'EQUIPE ROUGE");
+			break;
+		}
+		printf("weshhh\n");
+		if(castleInList(world->bleu) == 0){
+			printf("heyb\n");			
+			perdu("L'EQUIPE BLEU");			
 			break;
 		}
 
@@ -403,15 +442,18 @@ void jeu(Monde *world){
 int main(int argc, char const *argv[]){
 
 	Monde m;
-	createMonde(&m);	
-	initArray(ROUGE, &m.rouge, &m, 0, 0);
-	initArray(BLEU, &m.bleu, &m, NBLIG-1, NBCOL-1);
-
+	createMonde(&m);
+	
 	MLV_create_window("Game Of Stools", "Projet", L_FENETRE, H_FENETRE);
 
-	menu();
+	if(menu() == 1)
+		loadedGame(&m);
+	else{
+		initArray(ROUGE, &m.rouge, &m, 0, 0);
+		initArray(BLEU, &m.bleu, &m, NBLIG-1, NBCOL-1);
+	}
+	
 	jeu(&m);
-
 	MLV_actualise_window();
 	MLV_free_window();
 

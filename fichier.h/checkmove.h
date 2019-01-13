@@ -1,4 +1,3 @@
-#include "attack.h"
 
 void choixDeplacement(char couleur, Agent *agent, Monde *world){
 
@@ -587,7 +586,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor){
 		}
 
 		else if(agent->destx > tmpx && agent->desty < tmpy){
-			
+
 			if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0){
 			
 				if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1){

@@ -74,7 +74,6 @@ int drawBoxesAgent(Agent * agent, int tresor){
 	//Devenir Guerrier
 	else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-570 && y > H_FENETRE-600) && agent->genre == MANANT)
 		return 3;
-
 	//Sauvegarder
 	else if((x < L_FENETRE-50 && x > L_FENETRE-200) && (y < H_FENETRE-70 && y > H_FENETRE-100))
 		return 4;
