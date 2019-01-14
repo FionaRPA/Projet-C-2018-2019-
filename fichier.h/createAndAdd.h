@@ -83,6 +83,7 @@ void addInClan(Agent *chateau, AListe *clan){
 		}
 		chateau->vprec = cursor;
 		cursor->vsuiv = chateau;
+		chateau->vsuiv = NULL;
 	}
 }
 
@@ -93,6 +94,9 @@ int addAndTri(Agent *agent, AListe *listHab, Monde *world, char couleur, char ge
 	world->plateau[agent->posx][agent->posy].habitant = agent;
 	AListe before = NULL;
 
+	if(cell == NULL){
+		*listHab = agent;
+	}
 	if(agent == NULL)
 		return -1;
 	while(cell != NULL && cell->genre < agent->genre){
@@ -112,7 +116,6 @@ int addAndTri(Agent *agent, AListe *listHab, Monde *world, char couleur, char ge
 }
 
 
-//Juste pour sauvegarde
 void addInChateau(Agent *agent, AListe *listHab){
 
 	AListe cursor = *listHab;

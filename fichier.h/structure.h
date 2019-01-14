@@ -59,6 +59,7 @@ typedef struct agent{
 typedef struct{
 	Agent *chateau; /* s’il y a un chateau sur la case */
 	AListe habitant; /* les autres occupants */
+	AListe deplacement;
 	char clan;/* couleur du clan ayant revendique*/
 }Case;
 

@@ -1,4 +1,3 @@
-#include "structure.h"
 
 
 MLV_Color clanToColor(char clan){
@@ -61,6 +60,8 @@ int drawBoxesAgent(Agent * agent, int tresor){
 
 	if(agent->genre == MANANT && tresor >= CGUERRIER)
 		MLV_draw_text_box(L_FENETRE-225, H_FENETRE-600, 150, 30, "Devenir Guerrier", 9, MLV_COLOR_BLUEVIOLET, MLV_COLOR_BLACK, MLV_COLOR_BLUEVIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
+	else if(agent->genre == BARON && tresor >= CCHATEAU)
+		MLV_draw_text_box(L_FENETRE-225, H_FENETRE-600, 150, 30, "Construire Chateau", 9, MLV_COLOR_BLUEVIOLET, MLV_COLOR_BLACK, MLV_COLOR_BLUEVIOLET, MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER);
 
 	MLV_actualise_window();
 	MLV_wait_mouse(&x, &y);
@@ -74,6 +75,9 @@ int drawBoxesAgent(Agent * agent, int tresor){
 	//Devenir Guerrier
 	else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-570 && y > H_FENETRE-600) && agent->genre == MANANT)
 		return 3;
+	//Construire Baron
+	else if((x < L_FENETRE-75 && x > L_FENETRE-225) && (y < H_FENETRE-570 && y > H_FENETRE-600) && agent->genre == BARON)
+		return 5;
 	//Sauvegarder
 	else if((x < L_FENETRE-50 && x > L_FENETRE-200) && (y < H_FENETRE-70 && y > H_FENETRE-100))
 		return 4;

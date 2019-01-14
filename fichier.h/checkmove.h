@@ -1,3 +1,4 @@
+#include "attack.h"
 
 void choixDeplacement(char couleur, Agent *agent, Monde *world){
 
@@ -33,7 +34,6 @@ void choixDeplacement(char couleur, Agent *agent, Monde *world){
 		}
 	}
 }
-
 
 int contourAgent(Agent *agent, Monde *world, int tresor){
 
@@ -212,7 +212,7 @@ int checkPosition(Case plateau[NBLIG][NBCOL], AListe* chateau, int *x, int *y){
 		}
 	}
 
-	else if((*chateau)->posx == NBLIG-1 && (*chateau)->posy != 0 && (*chateau)->posy == NBCOL-1){
+	else if((*chateau)->posx == NBLIG-1 && (*chateau)->posy != 0 && (*chateau)->posy != NBCOL-1){
 		if(plateau[(*chateau)->posx][(*chateau)->posy -1].habitant == NULL && plateau[(*chateau)->posx ][(*chateau)->posy -1].chateau == NULL){
 			*x = (*chateau)->posx ;
 			*y = (*chateau)->posy -1;
@@ -314,54 +314,109 @@ int checkPosition(Case plateau[NBLIG][NBCOL], AListe* chateau, int *x, int *y){
 	return 1;
 }
 
-void moveAgent(Agent *agent, Monde *world, int tresor){
+Agent copieAgent(Agent agent){
+	Agent genre = agent;
+	return genre;
+}
 
-	int tmpx, tmpy;
+void  listDplmt(Agent *agent, AListe *listeDeplacement){
+	AListe tmp = *listeDeplacement;
+	Agent genre = copieAgent(*agent);
+	genre.asuiv = NULL;
+	genre.aprec = NULL;
+	if(tmp == NULL){
+		*listeDeplacement = genre;
+	}
+	else {
+		while(tmp->asuiv != NULL){
+			tmp = tmp->asuiv;
+		}
+		genre->aprec = tmp;
+		tmp->asuiv = genre;
+		genre->asuiv = NULL;
+	
+	}
+}
+
+
+void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement){
+	int tmpx, tmpy, last_posx, last_posy;
+	
+	last_posx = agent->posx;
+	last_posy = agent->posy;
 	tmpx = agent->posx;
 	tmpy = agent->posy;
-
+	
 	if (contourAgent(agent, world, tresor) == 0)
 		return;
+	if(*listeDeplacement != NULL){
+		while((*listeDeplacement)->asuiv != NULL){
+			(*listeDeplacement) = (*listeDeplacement)->asuiv;
+		}
+
+		if((*listeDeplacement)->aprec != NULL){
+
+			last_posx = (*listeDeplacement)->aprec->posx;
+			last_posy = (*listeDeplacement)->aprec->posy;
+
+		}
+
+		else{
+
+			last_posx = (*listeDeplacement)->posx;
+			last_posy = (*listeDeplacement)->posy;
+		}
+	}
 
 	if((tmpx != agent->destx) || (tmpy != agent->desty)){
 
 		if(agent->destx < tmpx && agent->desty < tmpy){
 
-			if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0){
-				if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0){
-					if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1){
-						if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1)
+			if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0 || last_posy == tmpy -1){
+
+				if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0 || last_posx == tmpx -1){
+				
+					if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1 || last_posy == tmpy +1){
+					
+						if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1 || last_posx == tmpx +1)
 							MLV_draw_text(L_FENETRE-250, H_FENETRE-600, "Aucune case libre autour", MLV_COLOR_WHITE);
 						else{
-							if(agent->posy +1 >= 0 && agent->posy+1 <= NBCOL-1){
-								agent->posy += 1;
+							if(agent->posx +1 >= 0 && agent->posx +1 <= NBLIG-1){
+						
+								agent->posx += 1;
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
+								
 								return;
 							}
 						}
 					}else{
-						if(agent->posx +1 >= 0 && agent->posx +1 <= NBLIG-1){
-							agent->posx += 1;
+						if(agent->posy +1 >= 0 && agent->posy +1 <= NBCOL-1){
+
+							agent->posy += 1;
 							world->plateau[agent->posx][agent->posy].habitant = agent;
-							world->plateau[tmpx][tmpy].habitant = NULL;
+							world->plateau[tmpx][tmpy].habitant = NULL;							
 							return;
 						}
 
 					}
-				}else{
-					if(agent->posy -1 >= 0 && agent->posy -1 <= NBCOL-1){
-						agent->posy -= 1;
+				}else{								
+					if(agent->posx -1 >= 0 && agent->posx -1 <= NBLIG-1){
+					
+						agent->posx -= 1;
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
+						
 						return;
 					}
 				}
 			}else{
-				if(agent->posx -1 >= 0 && agent->posx -1 <= NBLIG-1){
-					agent->posx -= 1;
+				if(agent->posy -1 >= 0 && agent->posy -1 <= NBCOL-1){
+
+					agent->posy -= 1;
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
+					
 					return;
 				}
 			}
@@ -369,40 +424,51 @@ void moveAgent(Agent *agent, Monde *world, int tresor){
 
 		else if(agent->destx < tmpx && agent->desty == tmpy){
 				
-			if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0){
-				if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0){
-					if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1){
-						if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1)
+			if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0 || last_posx == tmpx -1){
+
+				if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0 || last_posy != tmpy -1){
+
+					if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1 || last_posy == tmpy +1){
+				
+						if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1 || last_posx == tmpx +1)
 							MLV_draw_text(L_FENETRE-250, H_FENETRE-600, "Aucune case libre autour", MLV_COLOR_WHITE);
 						else{
-							if(agent->posy +1 >= 0 && agent->posy+1 <= NBCOL-1){
-								agent->posy += 1;
+							if(agent->posx +1 >= 0 && agent->posx +1 <= NBLIG-1){
+				
+								agent->posx += 1;
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
+								
 								return;
 							}
 						}
 					}else{
-						if(agent->posx +1 >= 0 && agent->posx +1 <= NBLIG-1){
-							agent->posx += 1;
+						if(agent->posy +1 >= 0 && agent->posy +1 <= NBCOL-1){
+			
+							agent->posy += 1;
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;
+							
 							return;
 						}
 					}
 				}else{
 					if(agent->posy -1 >= 0 && agent->posy -1 <= NBCOL-1){
+	
 						agent->posy -= 1;
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
+						
 						return;
 					}
 				}
 			}else{
 				if(agent->posx -1 >= 0 && agent->posx -1 <= NBLIG-1){
+
 					agent->posx -= 1;
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
+					
 					return;
 				}
 			}
@@ -410,40 +476,51 @@ void moveAgent(Agent *agent, Monde *world, int tresor){
 
 		else if(agent->destx < tmpx && agent->desty > tmpy){
 				
-			if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0){
-				if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1){
-					if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1){
-						if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0)
+			if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0 || last_posx == tmpx -1){
+
+				if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1 || last_posy == tmpy +1){
+						
+					if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0 || last_posy == tmpy -1){
+
+						if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1 || last_posx == tmpx +1)
 							MLV_draw_text(L_FENETRE-250, H_FENETRE-600, "Aucune case libre autour", MLV_COLOR_WHITE);
 						else{
-							if(agent->posy -1 >= 0 && agent->posy -1 <= NBCOL-1){
-								agent->posy -= 1;
+							if(agent->posx +1 >= 0 && agent->posx +1 <= NBLIG-1){
+
+								agent->posx += 1;
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
+								
 								return;
 							}
 						}
 					}else{
-						if(agent->posx +1 >= 0 && agent->posx +1 <= NBLIG-1){
-							agent->posx += 1;
+						if(agent->posy -1 >= 0 && agent->posy -1 <= NBCOL-1){
+
+							agent->posy -= 1;
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;
+															
 							return;
 						}
 					}
 				}else{
-					if(agent->posy +1 >= 0 && agent->posy+1 <= NBCOL-1){
+					if(agent->posy +1 >= 0 && agent->posy+1 <= NBCOL-1){	
+
 						agent->posy += 1;
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
+												
 						return;
 					}
 				}
 			}else{
 				if(agent->posx -1 >= 0 && agent->posx -1 <= NBLIG-1){
+
 					agent->posx -= 1;
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
+													
 					return;
 				}
 			}
@@ -452,43 +529,51 @@ void moveAgent(Agent *agent, Monde *world, int tresor){
 
 		else if(agent->destx == tmpx && agent->desty > tmpy){
 				
-			if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1){
+			if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1 || last_posy == tmpy +1){
 				
-				if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0){
+				if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0 || last_posx == tmpx -1){
+						
+					if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1 || last_posx == tmpx +1){
 
-					if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1){
-
-						if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0)
+						if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0 || last_posy == tmpy -1)
 							MLV_draw_text(L_FENETRE-250, H_FENETRE-600, "Aucune case libre autour", MLV_COLOR_WHITE);
 						else{
 							if(agent->posy -1 >= 0 && agent->posy -1 <= NBCOL-1){
+
 								agent->posy -= 1;
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
+								
 								return;
 							}
 						}
 					}else{
 						if(agent->posx +1 >= 0 && agent->posx +1 <= NBLIG-1){
-							agent->posx += 1;
+
+							agent->posx -= 1;
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;
+															
 							return;
 						}
 					}
 				}else{
 					if(agent->posx -1 >= 0 && agent->posx -1 <= NBLIG-1){
+
 						agent->posx -= 1;
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
+								
 						return;
 					}
 				}
 			}else{
-				if(agent->posy +1 >= 0 && agent->posy+1 <= NBCOL-1){
+				if(agent->posy +1 >= 0 && agent->posy+1 <= NBCOL-1){	
+
 					agent->posy += 1;
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
+													
 					return;
 				}
 			}
@@ -497,44 +582,52 @@ void moveAgent(Agent *agent, Monde *world, int tresor){
 
 		else if(agent->destx > tmpx && agent->desty > tmpy){
 				
-			if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1){
+			if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1 || last_posy == tmpy +1){
 
-				if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1){
+				if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0 || last_posx == tmpx -1){
+
+					if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1 || last_posx == tmpx +1){
+
 				
-					if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0){
-
-
-						if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0)
+						if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0 || last_posy == tmpy -1)
 							MLV_draw_text(L_FENETRE-250, H_FENETRE-600, "Aucune case libre autour", MLV_COLOR_WHITE);							
 						else{
-							if(agent->posy -1 >= 0 && agent->posy-1 <= NBCOL-1){
+							if(agent->posy -1 >= 0 && agent->posy -1 <= NBCOL-1){
+
 								agent->posy -= 1;
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
+								
 								return;
 							}
 						}
 					}else{
 						if(agent->posx -1 >= 0 && agent->posx -1 <= NBLIG-1){
+
 							agent->posx -= 1;
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;
+															
 							return;
 						}
 					}
 				}else{
 					if(agent->posx +1 >= 0 && agent->posx +1 <= NBLIG-1){
+
 						agent->posx += 1;
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
+								
 						return;
 					}
 				}
 			}else{
 				if(agent->posy +1 >= 0 && agent->posy+1 <= NBCOL-1){
+					
 					agent->posy += 1;
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
+					
 					return;
 				}
 			}
@@ -542,132 +635,153 @@ void moveAgent(Agent *agent, Monde *world, int tresor){
 
 		else if(agent->destx > tmpx && agent->desty == tmpy){
 				
-			if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1){
+			if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1 || last_posx == tmpx +1){
 	
-				if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1){
+				if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0 || last_posy == tmpy -1){
+
+					if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1 || last_posy == tmpy +1){
 				
-					if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0){
-
-
-						if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0)
+						if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0 || last_posx == tmpx -1)
 							MLV_draw_text(L_FENETRE-250, H_FENETRE-600, "Aucune case libre autour", MLV_COLOR_WHITE);
 						else{
-							if(agent->posy -1 >= 0 && agent->posy-1 <= NBCOL-1){
-								agent->posy -= 1;
+							if(agent->posx -1 >= 0 && agent->posx -1 <= NBLIG-1){
+  
+								agent->posx -= 1;
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
 								return;
 							}
 						}
 					}else{
-						if(agent->posx -1 >= 0 && agent->posx -1 <= NBLIG-1){
-							agent->posx -= 1;
+						if(agent->posy +1 >= 0 && agent->posy +1 <= NBCOL-1){
+					
+							agent->posy += 1;	
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;
 							return;
 						}
 					}
 				}else{
-					if(agent->posy +1 >= 0 && agent->posy+1 <= NBCOL-1){
-						agent->posy += 1;
+					if(agent->posy -1 >= 0 && agent->posy -1 <= NBCOL-1){
+			
+						agent->posy -= 1;
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
+								
 						return;
 					}
 				}
 			}else{
 				if(agent->posx +1 >= 0 && agent->posx +1 <= NBLIG-1){
+		
 					agent->posx += 1;
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
+													
 					return;
 				}
 			}
 		}
 
 		else if(agent->destx > tmpx && agent->desty < tmpy){
-
-			if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0){
 			
-				if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1){
+			if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0 || last_posy == tmpy -1){
+			
+				if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1 || last_posx == tmpx +1){
 					
-					if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0){
-
-						if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1)
-							MLV_draw_text(L_FENETRE-250, H_FENETRE-600, "Aucune case libre autour", MLV_COLOR_WHITE);
-						else{
-							if(agent->posy +1 >= 0 && agent->posy+1 <= NBCOL-1){
-								agent->posy += 1;
-								world->plateau[agent->posx][agent->posy].habitant = agent;
-								world->plateau[tmpx][tmpy].habitant = NULL;
-								return;
-							}
-						}
-					}else{
-						if(agent->posx -1 >= 0 && agent->posx -1 <= NBLIG-1){
-							agent->posx -= 1;
-							world->plateau[agent->posx][agent->posy].habitant = agent;
-							world->plateau[tmpx][tmpy].habitant = NULL;
-							return;
-						}
-					}
-				}else{
-					if(agent->posx +1 >= 0 && agent->posx +1 <= NBCOL-1){
-						agent->posx += 1;
-						world->plateau[agent->posx][agent->posy].habitant = agent;
-						world->plateau[tmpx][tmpy].habitant = NULL;
-						return;
-					}
-				}
-			}else{
-				if(agent->posy -1 >= 0 && agent->posy -1 <= NBLIG-1){
-					agent->posy -= 1;
-					world->plateau[agent->posx][agent->posy].habitant = agent;
-					world->plateau[tmpx][tmpy].habitant = NULL;
-					return;
-				}
-			}
-		}
-
-		else if(agent->destx == tmpx && agent->desty < tmpy){
+					if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0 || last_posx == tmpx -1){
 				
-			if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0){
-
-				if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1){
-					
-					if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0){
-
-						if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1)
+						if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1 || last_posy == tmpy +1)
 							MLV_draw_text(L_FENETRE-250, H_FENETRE-600, "Aucune case libre autour", MLV_COLOR_WHITE);
 						else{
-							if(agent->posy +1 >= 0 && agent->posy+1 <= NBCOL-1){
+							if(agent->posy +1 >= 0 && agent->posy +1 <= NBCOL-1){
+
 								agent->posy += 1;
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
+								
 								return;
 							}
 						}
 					}else{
 						if(agent->posx -1 >= 0 && agent->posx -1 <= NBLIG-1){
+
 							agent->posx -= 1;
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;
+															
 							return;
 						}
 					}
 				}else{
 					if(agent->posx +1 >= 0 && agent->posx +1 <= NBLIG-1){
+
 						agent->posx += 1;
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
+								
 						return;
 					}
 				}
 			}else{
-				if(agent->posy -1 >= 0 && agent->posy-1 <= NBCOL-1){
+				if(agent->posy -1 >= 0 && agent->posy -1 <= NBCOL-1){
+
 					agent->posy -= 1;
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
+								
+					return;
+				}
+			}
+		}
+		
+		else if(agent->destx == tmpx && agent->desty < tmpy){
+				
+			if((world->plateau[tmpx ][tmpy -1].habitant != NULL || world->plateau[tmpx ][tmpy -1].chateau != NULL) || tmpy == 0 || last_posy == tmpy -1){
+
+				if((world->plateau[tmpx +1][tmpy].habitant != NULL || world->plateau[tmpx +1][tmpy].chateau != NULL) || tmpx == NBLIG-1 || last_posx == tmpx +1){
+						
+					if((world->plateau[tmpx -1][tmpy].habitant != NULL || world->plateau[tmpx -1][tmpy].chateau != NULL) || tmpx == 0 || last_posx == tmpx -1){
+					
+						if((world->plateau[tmpx ][tmpy +1].habitant != NULL || world->plateau[tmpx ][tmpy +1].chateau != NULL) || tmpy == NBCOL-1 || last_posy == tmpy +1)
+							MLV_draw_text(L_FENETRE-250, H_FENETRE-600, "Aucune case libre autour", MLV_COLOR_WHITE);
+						else{
+							if(agent->posy +1 >= 0 && agent->posy +1 <= NBCOL-1){
+
+								agent->posy += 1;
+								world->plateau[agent->posx][agent->posy].habitant = agent;
+								world->plateau[tmpx][tmpy].habitant = NULL;
+
+								return;
+							}
+						}
+					}else{
+						if(agent->posx -1 >= 0 && agent->posx -1 <= NBLIG-1){
+
+							agent->posx -= 1;
+							world->plateau[agent->posx][agent->posy].habitant = agent;
+							world->plateau[tmpx][tmpy].habitant = NULL;
+															
+							return;
+						}
+					}
+				}else{
+					if(agent->posx +1 >= 0 && agent->posx +1 <= NBLIG-1){
+	   
+						agent->posx += 1;
+						world->plateau[agent->posx][agent->posy].habitant = agent;
+						world->plateau[tmpx][tmpy].habitant = NULL;
+												
+						return;
+					}
+				}
+			}else{
+				if(agent->posy -1 >= 0 && agent->posy-1 <= NBCOL-1){   
+
+					agent->posy -= 1;
+					world->plateau[agent->posx][agent->posy].habitant = agent;
+					world->plateau[tmpx][tmpy].habitant = NULL;
+								
 					return;
 				}
 			}
