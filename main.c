@@ -9,8 +9,9 @@
 #include "fichier.h/jeu.h"
 
 
+//																				MAIN
 
-int main(int argc, char const *argv[]){
+int main(int argc, char const *argv[]){ 
 
 	Monde m;
 	createMonde(&m);

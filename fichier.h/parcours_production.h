@@ -142,7 +142,7 @@ void deleteBaron(Monde *world, AListe *clan, Agent *agent){
 */
 void parcoursCastle(char couleur, AListe agent, Monde *world, int *tresor, AListe equipe){
 
-	int res = 0;
+	int res = 0, sol;
 	AListe clan;
 	AListe listeDeplacement;
 	actuMonde(*world, couleur);
@@ -155,7 +155,9 @@ void parcoursCastle(char couleur, AListe agent, Monde *world, int *tresor, AList
 	//Si l'agent n'est pas encore arrivé à destination on continue de le bouger automatiquement
 	if((agent->destx > -1 || agent->desty > -1 )){
 		listeDeplacement = world->plateau[agent->posx][agent->posy].deplacement;
-		moveAgent(agent, world, *tresor, &listeDeplacement);
+		sol = moveAgent(agent, world, *tresor, &listeDeplacement);
+        if(sol == 1)
+            return;
 		actuMonde(*world, couleur);
 		if(agent->posx == agent->destx && agent->posy == agent->desty){
 			if(world->plateau[agent->posx][agent->posy].clan != agent->clan && world->plateau[agent->posx][agent->posy].clan != LIBRE)
@@ -226,7 +228,6 @@ void parcoursCastle(char couleur, AListe agent, Monde *world, int *tresor, AList
 					world->tresorBleu -= CCHATEAU;
 					clan = (world->bleu);
 				}
-				Agent *tmp=agent;
 				deleteBaron(world, &clan, agent);
 				world->plateau[newchateau->posx][newchateau->posy].chateau = newchateau;				
 				checkPosition(world->plateau, &newchateau, &x, &y);

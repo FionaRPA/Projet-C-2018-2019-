@@ -1,4 +1,3 @@
-#include "attack.h"
 
 void choixDeplacement(char couleur, Agent *agent, Monde *world){
 
@@ -320,7 +319,7 @@ Agent copieAgent(Agent agent){
 }
 
 void  listDplmt(Agent *agent, AListe *listeDeplacement){
-	AListe tmp = *listeDeplacement;
+	/*AListe tmp = *listeDeplacement;
 	Agent genre = copieAgent(*agent);
 	genre.asuiv = NULL;
 	genre.aprec = NULL;
@@ -335,11 +334,12 @@ void  listDplmt(Agent *agent, AListe *listeDeplacement){
 		tmp->asuiv = genre;
 		genre->asuiv = NULL;
 	
-	}
+	}*/
+	return;
 }
 
 
-void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement){
+int moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement){
 	int tmpx, tmpy, last_posx, last_posy;
 	
 	last_posx = agent->posx;
@@ -348,7 +348,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 	tmpy = agent->posy;
 	
 	if (contourAgent(agent, world, tresor) == 0)
-		return;
+		return 1;
 	if(*listeDeplacement != NULL){
 		while((*listeDeplacement)->asuiv != NULL){
 			(*listeDeplacement) = (*listeDeplacement)->asuiv;
@@ -387,7 +387,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
 								
-								return;
+								return 0;
 							}
 						}
 					}else{
@@ -396,7 +396,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 							agent->posy += 1;
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;							
-							return;
+							return 0;
 						}
 
 					}
@@ -407,7 +407,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
 						
-						return;
+						return 0;
 					}
 				}
 			}else{
@@ -417,7 +417,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
 					
-					return;
+					return 0;
 				}
 			}
 		}
@@ -439,7 +439,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
 								
-								return;
+								return 0;
 							}
 						}
 					}else{
@@ -449,7 +449,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;
 							
-							return;
+							return 0;
 						}
 					}
 				}else{
@@ -459,7 +459,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
 						
-						return;
+						return 0;
 					}
 				}
 			}else{
@@ -469,7 +469,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
 					
-					return;
+					return 0;
 				}
 			}
 		}
@@ -491,7 +491,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
 								
-								return;
+								return 0;
 							}
 						}
 					}else{
@@ -501,7 +501,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;
 															
-							return;
+							return 0;
 						}
 					}
 				}else{
@@ -511,7 +511,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
 												
-						return;
+						return 0;
 					}
 				}
 			}else{
@@ -521,7 +521,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
 													
-					return;
+					return 0;
 				}
 			}
 
@@ -544,7 +544,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
 								
-								return;
+								return 0;
 							}
 						}
 					}else{
@@ -554,7 +554,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;
 															
-							return;
+							return 0;
 						}
 					}
 				}else{
@@ -564,7 +564,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
 								
-						return;
+						return 0;
 					}
 				}
 			}else{
@@ -574,7 +574,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
 													
-					return;
+					return 0;
 				}
 			}
 
@@ -598,7 +598,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
 								
-								return;
+								return 0;
 							}
 						}
 					}else{
@@ -608,7 +608,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;
 															
-							return;
+							return 0;
 						}
 					}
 				}else{
@@ -618,7 +618,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
 								
-						return;
+						return 0;
 					}
 				}
 			}else{
@@ -628,7 +628,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
 					
-					return;
+					return 0;
 				}
 			}
 		}
@@ -649,7 +649,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 								agent->posx -= 1;
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
-								return;
+								return 0;
 							}
 						}
 					}else{
@@ -658,7 +658,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 							agent->posy += 1;	
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;
-							return;
+							return 0;
 						}
 					}
 				}else{
@@ -668,7 +668,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
 								
-						return;
+						return 0;
 					}
 				}
 			}else{
@@ -678,7 +678,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
 													
-					return;
+					return 0;
 				}
 			}
 		}
@@ -700,7 +700,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
 								
-								return;
+								return 0;
 							}
 						}
 					}else{
@@ -710,7 +710,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;
 															
-							return;
+							return 0;
 						}
 					}
 				}else{
@@ -720,7 +720,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
 								
-						return;
+						return 0;
 					}
 				}
 			}else{
@@ -730,7 +730,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
 								
-					return;
+					return 0;
 				}
 			}
 		}
@@ -752,7 +752,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 								world->plateau[agent->posx][agent->posy].habitant = agent;
 								world->plateau[tmpx][tmpy].habitant = NULL;
 
-								return;
+								return 0;
 							}
 						}
 					}else{
@@ -762,7 +762,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 							world->plateau[agent->posx][agent->posy].habitant = agent;
 							world->plateau[tmpx][tmpy].habitant = NULL;
 															
-							return;
+							return 0;
 						}
 					}
 				}else{
@@ -772,7 +772,7 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 						world->plateau[agent->posx][agent->posy].habitant = agent;
 						world->plateau[tmpx][tmpy].habitant = NULL;
 												
-						return;
+						return 0;
 					}
 				}
 			}else{
@@ -782,10 +782,11 @@ void moveAgent(Agent *agent, Monde *world, int tresor, AListe *listeDeplacement)
 					world->plateau[agent->posx][agent->posy].habitant = agent;
 					world->plateau[tmpx][tmpy].habitant = NULL;
 								
-					return;
+					return 0;
 				}
 			}
 		}
 
 	}
+    return 0;
 }
