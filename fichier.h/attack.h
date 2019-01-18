@@ -17,13 +17,15 @@ int coup(Agent agent, int de){
 	return coupAgent;
 }
 
-AListe parcoursClanAdverse(AListe clan, Agent *agent){
+AListe parcoursClanAdverse(AListe clan, Agent *agent, Monde *world){
 
-    AListe tmp = NULL;
+    AListe listHab;
     for(;clan != NULL; clan=clan->vsuiv){
-        for(tmp=clan; tmp != NULL; tmp=tmp->asuiv){
-            if(tmp == agent)
+		listHab = world->plateau[clan->posx][clan->posy].habitant;
+        for(; listHab != NULL; listHab=listHab->asuiv){
+            if(listHab == agent){
                 return clan;
+			}
         }
     }
     return NULL;
@@ -43,13 +45,13 @@ void deleteAgentInCastle(AListe *listHab, Monde *world, Agent *agentKeep){
         //On ajoute les manants dans la liste
         else{
             if(curs->clan == ROUGE){
-                clanAdv = parcoursClanAdverse((*world).bleu, agentKeep);
+                clanAdv = parcoursClanAdverse((*world).bleu, agentKeep, world);
                 curs->clan = BLEU;
                 hab = world->plateau[clanAdv->posx][clanAdv->posy].habitant;
                 addAndTri(curs, &hab, world, BLEU, curs->genre, curs->posx, curs->posy);
             }
             else if(curs->clan == BLEU){
-                clanAdv = parcoursClanAdverse((*world).rouge, agentKeep);
+                clanAdv = parcoursClanAdverse((*world).rouge, agentKeep, world);
                 curs->clan = ROUGE;
                 hab = world->plateau[clanAdv->posx][clanAdv->posy].habitant;
                 addAndTri(curs, &hab, world, ROUGE, curs->genre, curs->posx, curs->posy);
@@ -112,9 +114,10 @@ void deleteAgent(Monde *world, AListe *clan, Agent *agentSupp, Agent *agentKeep)
 				prec = tmp;
 				suiv = prec->asuiv;
 			}
-			world->plateau[agentSupp->posx][agentSupp->posy].habitant = NULL;
 
 		}
+		prec = cursor;
+		suiv = prec->asuiv;
 	}
 }
 
@@ -132,6 +135,7 @@ void attack(Agent *agent1, Agent *agent2, Monde *world){
 		
 		if (coupAgent1 < coupAgent2){
 			world->plateau[agent1->posx][agent1->posy].habitant = NULL;
+			world->plateau[agent1->posx][agent1->posy].clan = LIBRE;
 			if(agent1->clan == ROUGE){
 				deleteAgent(world, &(world->rouge), agent1, agent2);
 			}else if(agent1->clan == BLEU){
